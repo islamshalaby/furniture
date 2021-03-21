@@ -25,7 +25,7 @@
                             <th>{{ __('messages.image') }}</th>
                             <th>{{ __('messages.category_title') }}</th>
                             <th class="text-center">{{ __('messages.sub_category_first') }}</th>
-                            <th class="text-center">{{ __('messages.cat_options') }}</th>
+                            {{--  <th class="text-center">{{ __('messages.cat_options') }}</th>  --}}
                             <th class="text-center">{{ __('messages.products') }}</th>
                             @if(Auth::user()->update_data)<th class="text-center">{{ __('messages.edit') }}</th>@endif
                             @if(Auth::user()->delete_data)<th class="text-center">{{ __('messages.delete') }}</th>@endif
@@ -38,7 +38,7 @@
                                 <td><?=$i;?></td>
                                 <td class="text-center"><img src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{ $category->image }}"  /></td>
                                 <td>{{ app()->getLocale() == 'en' ? $category->title_en : $category->title_ar }}</td>
-                                <td class="text-center blue-color">
+                                {{--  <td class="text-center blue-color">
                                     <a href="{{route('sub_cat.show',$category->id)}}">
                                         <div class="">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -50,7 +50,7 @@
                                             </svg>
                                         </div>
                                     </a>
-                                </td>
+                                </td>  --}}
                                 <td class="text-center blue-color">
                                     <a href="{{route('cat_options.show',$category->id)}}">
                                         <div class="">

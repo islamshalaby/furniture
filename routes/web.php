@@ -302,6 +302,7 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
 
     // company
     Route::resource('companies', 'CompanyController');
+    Route::get('/companies/delete/{id}' , 'CompanyController@destroy')->name('delete.companies');
 
 });
 

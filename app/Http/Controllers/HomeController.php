@@ -181,6 +181,7 @@ class HomeController extends Controller
         }
         
         $data['categories'] = $categories;
+        $data['offers'] = Ad::where('content_type', 2)->select('id', 'image')->get();
         if ($lang == 'ar') {
             $data['offer_image'] = Setting::where('id', 1)->first()->offer_image;
         } else {

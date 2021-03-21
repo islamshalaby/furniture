@@ -13,6 +13,7 @@
         </div>
         <form action="{{route('companies.update',$data->id)}}" method="post" enctype="multipart/form-data" >
             @csrf
+            <input name="_method" type="hidden" value="PUT">
             <div class="form-group mb-4">
                 <label for="">{{ __('messages.current_image') }}</label><br>
                 <img src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{ $data['logo'] }}"  />

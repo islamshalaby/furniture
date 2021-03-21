@@ -46,8 +46,17 @@
                 })
             }
         })
-        @endif
 
+        @endif
+        $("#content_type").on("change", function() {
+            if ($(this).val() == 1) {
+                $("select#users").parent('.form-group').show()
+            }else {
+                $("select#users").parent('.form-group').hide()
+                $('select#products').prop('disabled', true)
+                $('select#products').parent('.form-group').hide()
+            }
+        })
         $("#ad_type").on("change", function() {
             if(this.value == 1) {
                 $(".outside").show()
@@ -55,10 +64,13 @@
                 $('select#products').prop("disabled", true)
                 $(".outside input").prop("disabled", false)
                 $(".inside").hide()
+                $("#content_type").parent('.form-group').hide()
+                $("#content_type").prop('disabled', true)
             }else {
                 $(".outside").hide()
                 $(".outside input").prop("disabled", true)
-                $(".inside").show()
+                $("#content_type").parent('.form-group').show()
+                $("#content_type").prop('disabled', false)
             }
         })
     </script>
@@ -88,31 +100,30 @@
                 </label>
                 <div class="custom-file-container__image-preview"></div>
             </div>
-            <div class="form-group">
-                <label for="sel1">{{ __('messages.ad_place') }}</label>
-                <select class="form-control" name="place" id="sel1">
-                    <option selected>{{ __('messages.select') }}</option>
-                    <option {{ $data['ad']['place'] == 1 ? 'selected' : '' }} value="1">{{ __('messages.on_the_top') }}</option>
-                    <option {{ $data['ad']['place'] == 2 ? 'selected' : '' }} value="2">{{ __('messages.on_the_middle') }}</option>
-                </select>
-            </div>
 
             <div class="form-group">
                 <label for="sel1">{{ __('messages.ad_type') }}</label>
                 <select id="ad_type" name="type" class="form-control">
                     <option selected>{{ __('messages.select') }}</option>
                     <option {{ $data['ad']['type'] == 'link' ? 'selected' : '' }} value="1">{{ __('messages.outside_the_app') }}</option>
-                    <option {{ $data['ad']['type'] == 'id' ? 'selected' : '' }} value="2">{{ __('messages.inside_the_app') }}</option>
+                    <option {{ $data['ad']['type'] == 'id' || $data['ad']['type'] == 'offer' ? 'selected' : '' }} value="2">{{ __('messages.inside_the_app') }}</option>
                 </select>
             </div>
                    
-            <div style="display: {{ $data['ad']['type'] == 'id' ? 'none' : '' }}" class="form-group mb-4 outside">
+            <div style="display: {{ $data['ad']['type'] == 'id' || $data['ad']['type'] == 'offer' ? 'none' : '' }}" class="form-group mb-4 outside">
                 <label for="link">{{ __('messages.link') }}</label>
-                <input required type="text" name="content" class="form-control" id="link" placeholder="{{ __('messages.link') }}" value="{{ $data['ad']['content'] }}" >
+                <input required {{ $data['ad']['type'] == 'id' || $data['ad']['type'] == 'offer' ? 'disabled' : '' }} type="text" name="content" class="form-control" id="link" placeholder="{{ __('messages.link') }}" value="{{ $data['ad']['content'] }}" >
             </div>
             
-
-            <div style="display: {{ $data['ad']['type'] == 'link' ? 'none' : '' }}" class="form-group inside">
+            <div style="display: {{ $data['ad']['type'] == 'link' ? 'none' : '' }}" class="form-group">
+                <label for="content_type">{{ __('messages.type') }}</label>
+                <select id="content_type" name="content_type" class="form-control">
+                    <option disabled selected>{{ __('messages.select') }}</option>
+                    <option {{ $data['ad']['content_type'] == 1 ? 'selected' : '' }} value="1">{{ __('messages.products') }}</option>
+                    <option {{ $data['ad']['content_type'] == 2 ? 'selected' : '' }} value="2">{{ __('messages.offers') }}</option>
+                </select>
+            </div>
+            <div style="display: {{ $data['ad']['type'] == 'link' || $data['ad']['type'] == 'offer' ? 'none' : '' }}" class="form-group inside">
                 <label for="users">{{ __('messages.user') }}</label>
                 <select id="users" class="form-control">
                     <option selected disabled>{{ __('messages.select') }}</option>

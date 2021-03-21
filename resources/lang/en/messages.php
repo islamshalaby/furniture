@@ -311,5 +311,9 @@
         "companies" => "Companies",
         "company_name_en" => "English Company name",
         "company_name_ar" => "Arabic Company name",
+        "offers" => "Offers",
+        "outer_link_ads" => "Outer Link Ads",
+        "products_ads" => "products Ads",
+        "offers_ads" => "Offers Ads"
     ];
 ?>

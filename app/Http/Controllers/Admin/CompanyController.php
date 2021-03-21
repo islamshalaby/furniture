@@ -17,7 +17,7 @@ class CompanyController extends AdminController
      */
     public function index()
     {
-        $data = Company::OrderBy('id', 'Desc')->get();
+        $data = Company::where('deleted', 0)->OrderBy('id', 'Desc')->get();
 
         return view('admin.company.index', compact('data'));
     }
@@ -47,6 +47,7 @@ class CompanyController extends AdminController
             'name_en' => 'required',
             'name_ar' => 'required',
             'logo' => 'required',
+            'email' => 'required',
             'user_id' => 'required'
         ]);
         
@@ -101,7 +102,32 @@ class CompanyController extends AdminController
      */
     public function update(Request $request, $id)
     {
-        //
+        $data = $this->validate(\request(),
+            [
+                'name_en' => 'required',
+                'name_ar' => 'required',
+                'user_id' => 'required',
+                'email' => 'required'
+            ]);
+        $company = Company::find($id);
+
+        if ($request->logo != null) {
+            $image_name = $request->file('logo')->getRealPath();
+            if (!empty($company->logo)) {
+                $publicId = substr($company->logo, 0, strrpos($company->logo, "."));
+                Cloudder::delete($publicId);
+            }
+            Cloudder::upload($image_name, null);
+            $imagereturned = Cloudder::getResult();
+            $image_id = $imagereturned['public_id'];
+            $image_format = $imagereturned['format'];
+            $image_new_name = $image_id . '.' . $image_format;
+            $data['logo'] = $image_new_name;
+        }
+
+        $company->update($data);
+        session()->flash('success', trans('messages.updated_s'));
+        return redirect( route('companies.index'));
     }
 
     /**
@@ -112,6 +138,10 @@ class CompanyController extends AdminController
      */
     public function destroy($id)
     {
-        //
+        $company = Company::find($id);
+        $company->update(['deleted' => 1]);
+
+        session()->flash('success', trans('messages.deleted_s'));
+        return redirect( route('companies.index'));
     }
 }

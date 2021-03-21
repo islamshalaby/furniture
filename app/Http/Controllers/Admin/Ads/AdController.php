@@ -27,9 +27,15 @@ class AdController extends AdminController{
         $ad = new Ad();
         $ad->image = $image_new_name;
         $ad->content = $request->content;
+        if ($request->content_type == 2) {
+            $ad->content = "offer";
+        }
+        $ad->content_type = $request->content_type;
         $ad->place = $request->place;
         if ($request->input('type') == 1) {
             $ad->type = "link";
+        }elseif ($request->content_type == 2){
+            $ad->type = "offer";
         }else {
             $ad->type = "id";
         }
@@ -39,8 +45,10 @@ class AdController extends AdminController{
     }
     // get all ads
     public function show(Request $request){
-        $data['ads_top'] = Ad::where('place',1)->orderBy('id' , 'desc')->get();
-        $data['ads_bottom'] = Ad::where('place',3)->orderBy('id' , 'desc')->get();
+        $data['out_link'] = Ad::where('type','link')->orderBy('id' , 'desc')->get();
+        $data['products'] = Ad::where('type','id')->where('content_type', 1)->orderBy('id' , 'desc')->get();
+        $data['offers'] = Ad::where('type','offer')->where('content_type', 2)->orderBy('id' , 'desc')->get();
+        
         return view('admin.ads.ads' , ['data' => $data]);
     }
 
@@ -75,10 +83,16 @@ class AdController extends AdminController{
         }
         if ($request->input('type') == 1) {
             $ad->type = "link";
+        }elseif ($request->content_type == 2){
+            $ad->type = "offer";
         }else {
             $ad->type = "id";
         }
         $ad->content = $request->content;
+        if ($request->content_type == 2) {
+            $ad->content = "offer";
+        }
+        $ad->content_type = $request->content_type;
         $ad->place = $request->place;
         // dd($ad);
         $ad->save();

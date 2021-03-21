@@ -8,7 +8,6 @@
         $("select#users").on("change", function () {
             $('select#products').html("")
             var userId = $(this).find("option:selected").val();
-            console.log(userId)
 
             $.ajax({
                 url : "fetchproducts/" + userId,
@@ -24,6 +23,15 @@
                 }
             })
         })
+        $("#content_type").on("change", function() {
+            if ($(this).val() == 1) {
+                $("select#users").parent('.form-group').show()
+            }else {
+                $("select#users").parent('.form-group').hide()
+                $('select#products').prop('disabled', true)
+                $('select#products').parent('.form-group').hide()
+            }
+        })
         $("#ad_type").on("change", function() {
             if(this.value == 1) {
                 $(".outside").show()
@@ -31,10 +39,13 @@
                 $('select#products').prop("disabled", true)
                 $(".outside input").prop("disabled", false)
                 $(".inside").hide()
+                $("#content_type").parent('.form-group').hide()
+                $("#content_type").prop('disabled', true)
             }else {
                 $(".outside").hide()
                 $(".outside input").prop("disabled", true)
-                $(".inside").show()
+                $("#content_type").parent('.form-group').show()
+                $("#content_type").prop('disabled', false)
             }
         })
     </script>
@@ -61,15 +72,7 @@
                 </label>
                 <div class="custom-file-container__image-preview"></div>
             </div>
-            <div class="form-group">
-                <label for="sel1">{{ __('messages.ad_place') }}</label>
-                <select class="form-control" name="place" id="sel1">
-                    <option selected>{{ __('messages.select') }}</option>
-                    <option value="1">{{ __('messages.on_the_top') }}</option>
-                    <!-- <option value="2">{{ __('messages.on_the_middle') }}</option> -->
-                    <option value="3">{{ __('messages.on_the_bottom') }}</option>
-                </select>
-            </div>
+            
             <div class="form-group">
                 <label for="sel1">{{ __('messages.ad_type') }}</label>
                 <select id="ad_type" name="type" class="form-control">
@@ -81,6 +84,14 @@
             <div style="display: none" class="form-group mb-4 outside">
                 <label for="link">{{ __('messages.link') }}</label>
                 <input required type="text" name="content" class="form-control" id="link" placeholder="{{ __('messages.link') }}" value="" >
+            </div>
+            <div style="display: none" class="form-group">
+                <label for="content_type">{{ __('messages.type') }}</label>
+                <select id="content_type" name="content_type" class="form-control">
+                    <option disabled selected>{{ __('messages.select') }}</option>
+                    <option value="1">{{ __('messages.products') }}</option>
+                    <option value="2">{{ __('messages.offers') }}</option>
+                </select>
             </div>
             <div style="display: none" class="form-group inside">
                 <label for="users">{{ __('messages.user') }}</label>

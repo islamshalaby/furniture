@@ -508,11 +508,11 @@ class ProductController extends Controller
             'latitude' => 'required',
             'longitude' => 'required',
             'share_location' => 'required',
-            'options' => 'required',
+            // 'options' => 'required',
             'plan_id' => 'required',
         ]);
         if ($validator->fails()) {
-            $response = APIHelpers::createApiResponse(true, 406, $validator->messages()->first(), $validator->messages()->first(), null, $request->lang);
+            $response = APIHelpers::createApiResponse(true, 406, $validator->messages()->first(), $validator->messages()->first(), (object)[], $request->lang);
             return response()->json($response, 406);
         } else {
             $user = auth()->user();
@@ -593,22 +593,22 @@ class ProductController extends Controller
                     $ad_data = Product::create($input);
 
                     //save product feature ...
-                    foreach ($request->options as $key => $option) {
-                        if (is_numeric($option['option_value'])) {
-                            $option_values = Category_option_value::where('id', $option['option_value'])->first();
-                            if ($option_values != null) {
-                                $feature_data['type'] = 'option';
-                            } else {
-                                $feature_data['type'] = 'manual';
-                            }
-                        } else {
-                            $feature_data['type'] = 'manual';
-                        }
-                        $feature_data['product_id'] = $ad_data->id;
-                        $feature_data['target_id'] = $option['option_value'];
-                        $feature_data['option_id'] = $option['option_id'];
-                        Product_feature::create($feature_data);
-                    }
+                    // foreach ($request->options as $key => $option) {
+                    //     if (is_numeric($option['option_value'])) {
+                    //         $option_values = Category_option_value::where('id', $option['option_value'])->first();
+                    //         if ($option_values != null) {
+                    //             $feature_data['type'] = 'option';
+                    //         } else {
+                    //             $feature_data['type'] = 'manual';
+                    //         }
+                    //     } else {
+                    //         $feature_data['type'] = 'manual';
+                    //     }
+                    //     $feature_data['product_id'] = $ad_data->id;
+                    //     $feature_data['target_id'] = $option['option_value'];
+                    //     $feature_data['option_id'] = $option['option_id'];
+                    //     Product_feature::create($feature_data);
+                    // }
                     foreach ($request->images as $image) {
                         Cloudder::upload("data:image/jpeg;base64," . $image, null);
                         $imagereturned = Cloudder::getResult();
@@ -620,15 +620,15 @@ class ProductController extends Controller
                         $data['image'] = $image_name;
                         ProductImage::create($data);
                     }
-                    $response = APIHelpers::createApiResponse(false, 200, 'your ad added successfully', 'تم أنشاء الاعلان بنجاح', null, $request->lang);
+                    $response = APIHelpers::createApiResponse(false, 200, 'your ad added successfully', 'تم أنشاء الاعلان بنجاح', (object)[], $request->lang);
                     return response()->json($response, 200);
                 } else {
                     $response = APIHelpers::createApiResponse(true, 406, 'Your wallet does not contain enough amount to create an ad',
-                        'محفظتك لا تحتوى على المبلغ الكافى لانشاء الاعلانا', null, $request->lang);
+                        'محفظتك لا تحتوى على المبلغ الكافى لانشاء الاعلانا', (object)[], $request->lang);
                     return response()->json($response, 406);
                 }
             } else {
-                $response = APIHelpers::createApiResponse(true, 406, '', 'يجب تسجيل الدخول اولا', null, $request->lang);
+                $response = APIHelpers::createApiResponse(true, 406, '', 'يجب تسجيل الدخول اولا', (object)[], $request->lang);
                 return response()->json($response, 406);
             }
         }
