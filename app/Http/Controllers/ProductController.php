@@ -26,7 +26,7 @@ class ProductController extends Controller
     public function __construct()
     {
         $this->middleware('auth:api', ['except' => ['filter','offer_ads', 'republish_ad','areas', 'cities', 'third_step_excute_pay', 'save_third_step_with_money', 'update_ad', 'select_ad_data', 'delete_my_ad', 'save_third_
-        step', 'save_second_step', 'save_first_step', 'getdetails', 'last_seen', 'getoffers', 'getproducts', 'getsearch', 'getFeatureOffers']]);
+        step', 'save_second_step', 'save_first_step', 'getdetails', 'last_seen', 'getOffersPage', 'getoffers', 'getproducts', 'getsearch', 'getFeatureOffers']]);
         //        --------------------------------------------- begin scheduled functions --------------------------------------------------------
 
         $expired = Product::where('status', 1)->whereDate('expiry_date', '<', Carbon::now())->get();
@@ -183,12 +183,13 @@ class ProductController extends Controller
 
     public function getdetails(Request $request)
     {
+        Session::put('local_api',$request->lang);
         $user = auth()->user();
         $lang = $request->lang;
         Session::put('lang', $lang);
-        $data = Product::with('Product_user')
-            ->select('id', 'title', 'main_image', 'description', 'price', 'type', 'publication_date as date', 'user_id', 'category_id')
-            ->find($request->id);
+        $data = Product::with('Product_user')->with('City_api')
+            ->select('id', 'title', 'main_image', 'description', 'price', 'publication_date as date', 'views', 'address', 'latitude', 'longitude', 'user_id', 'city_id', 'category_id')
+            ->find($request->id)->makeHidden(['city_id', 'category_id']);
         if ($data->price == null) {
             if ($lang == 'ar') {
                 $data->price = 'اسأل البائع';
@@ -203,6 +204,10 @@ class ProductController extends Controller
                 $data_view['ip'] = $user_ip_address;
                 $data_view['product_id'] = $data->id;
                 Product_view::create($data_view);
+                $views = Product_view::where('product_id', $data->id)->count();
+                $product = Product::where('id', $request->id)->select('id', 'views')->first();
+                $product->views = $views;
+                $product->save();
             }
         } else {
             $prod_view = Product_view::where('ip', $user_ip_address)->where('product_id', $data->id)->first();
@@ -211,23 +216,27 @@ class ProductController extends Controller
                 $data_view['ip'] = $user_ip_address;
                 $data_view['product_id'] = $data->id;
                 Product_view::create($data_view);
+                $views = Product_view::where('product_id', $data->id)->count();
+                $product = Product::where('id', $request->id)->select('id', 'views')->first();
+                $product->views = $views;
+                $product->save();
             } else {
                 $prod_view->user_id = $user->id;
                 $prod_view->save();
             }
         }
-        $features = Product_feature::where('product_id', $request->id)
-            ->select('id', 'type', 'product_id', 'target_id', 'option_id')
-            ->get();
-        $feature_data = null;
-        foreach ($features as $key => $feature) {
-            $feature_data[$key]['image'] = $feature->Option->image;
-            if ($feature->type == 'manual') {
-                $feature_data[$key]['title'] = $feature->Option->title . ' : ' . $feature->target_id;
-            } else if ($feature->type == 'option') {
-                $feature_data[$key]['title'] = $feature->Option->title . ' : ' . $feature->Option_value->value;
-            }
-        }
+        // $features = Product_feature::where('product_id', $request->id)
+        //     ->select('id', 'type', 'product_id', 'target_id', 'option_id')
+        //     ->get();
+        // $feature_data = null;
+        // foreach ($features as $key => $feature) {
+        //     $feature_data[$key]['image'] = $feature->Option->image;
+        //     if ($feature->type == 'manual') {
+        //         $feature_data[$key]['title'] = $feature->Option->title . ' : ' . $feature->target_id;
+        //     } else if ($feature->type == 'option') {
+        //         $feature_data[$key]['title'] = $feature->Option->title . ' : ' . $feature->Option_value->value;
+        //     }
+        // }
         if ($user) {
             $favorite = Favorite::where('user_id', $user->id)->where('product_id', $data->id)->first();
             if ($favorite) {
@@ -239,8 +248,7 @@ class ProductController extends Controller
             $data->favorite = false;
         }
         $date = date_create($data->date);
-        $data->date = date_format($date, 'd M Y');
-        $data->time = date_format($date, 'g:i a');
+        $data->date = APIHelpers::get_month_day($date,$request->lang);
         $data->likes = Favorite::where('product_id', $data->id)->count();
 
 
@@ -254,9 +262,10 @@ class ProductController extends Controller
             ->where('publish', 'Y')
             ->where('deleted', 0)
             ->where('user_id', $user->id)
-            ->select('id', 'title', 'price', 'type', 'main_image as image', 'created_at')
+            ->with('city_api')
+            ->select('id', 'title', 'price', 'main_image as image', 'created_at', 'views', 'city_id')
             ->limit(3)
-            ->get()
+            ->get()->makeHidden(['created_at', 'city_id'])
             ->map(function ($ads) use ($lang) {
                 if ($ads->price == null) {
                     if ($lang == 'ar') {
@@ -265,21 +274,32 @@ class ProductController extends Controller
                         $ads->price = 'Ask the seller';
                     }
                 }
-                $ads->time = APIHelpers::get_month_year($ads->created_at , $lang);
+                $ads->time = APIHelpers::get_time_day($ads->created_at , $lang);
                 return $ads;
             });
         foreach ($user_other_ads as $key => $row) {
             $user_ids[$key] = $row->id;
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $row->id)->first();
+                if ($favorite) {
+                    $row->favorite = true;
+                } else {
+                    $row->favorite = false;
+                }
+            } else {
+                $row->favorite = false;
+            }
         }
         $related = Product::where('category_id', $data->category_id)
             ->where('id', '!=', $data->id)
             ->wherenotin('id', $user_ids)
+            ->with('city_api')
             ->where('status', 1)
             ->where('publish', 'Y')
             ->where('deleted', 0)
-            ->select('id', 'title', 'price', 'type', 'main_image as image', 'created_at')
+            ->select('id', 'title', 'price', 'main_image as image', 'created_at', 'views', 'city_id')
             ->limit(3)
-            ->get()
+            ->get()->makeHidden(['created_at', 'city_id'])
             ->map(function ($ads) use ($lang) {
                 if ($ads->price == null) {
                     if ($lang == 'ar') {
@@ -288,7 +308,7 @@ class ProductController extends Controller
                         $ads->price = 'Ask the seller';
                     }
                 }
-                $ads->time = APIHelpers::get_month_year($ads->created_at , $lang);
+                $ads->time = APIHelpers::get_time_day($ads->created_at , $lang);
                 return $ads;
             });
         for ($i = 0; $i < count($related); $i++) {
@@ -303,9 +323,39 @@ class ProductController extends Controller
                 $related[$i]['favorite'] = false;
             }
         }
-        $views = Product_view::where('product_id', $data->id)->count();
-        $response = APIHelpers::createApiResponse(false, 200, '', '', array('product' => $data,
-            'features' => $feature_data, 'user_other_ads' => $user_other_ads, 'related' => $related, 'views' => $views), $request->lang);
+
+        
+        $response = APIHelpers::createApiResponse(false, 200, '', '', array('product' => $data, 'user_other_ads' => $user_other_ads, 'related' => $related), $request->lang);
+        return response()->json($response, 200);
+    }
+
+    // islam code
+    // get offers page
+    public function getOffersPage(Request $request) {
+        $products = Product::where('offer', 1)->where('status', 1)
+        ->where('publish', 'Y')
+        ->where('deleted', 0)
+        ->select('id', 'title', 'price', 'main_image as image', 'created_at', 'views', 'city_id')
+        ->with('city_api')
+        ->simplePaginate(12);
+        $data = $products->makeHidden(['created_at', 'city_id']);
+        $products->data = $data;
+        $user = auth()->user();
+        for ($i =0; $i < count($products); $i ++) {
+            $products[$i]['time'] = APIHelpers::get_time_day($products[$i]['created_at'], $request->lang);
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $products[$i]['id'])->first();
+                if ($favorite) {
+                    $products[$i]['favorite'] = true;
+                } else {
+                    $products[$i]['favorite'] = false;
+                }
+            } else {
+                $products[$i]['favorite'] = false;
+            }
+        }
+
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
         return response()->json($response, 200);
     }
 
@@ -374,6 +424,7 @@ class ProductController extends Controller
 
     public function getsearch(Request $request)
     {
+        Session::put('local_api',$request->lang);
         $lang = $request->lang;
         $validator = Validator::make($request->all(), [
             'search' => 'required'
@@ -382,13 +433,17 @@ class ProductController extends Controller
         $products = Product::where('publish', 'Y')
             ->where('deleted', 0)
             ->where('status', 1)
-            ->select('id', 'title', 'price', 'main_image as image', 'created_at', 'pin')
+            ->select('id', 'title', 'price', 'main_image as image', 'area_id', 'city_id', 'created_at', 'pin')
             ->Where(function ($query) use ($search) {
                 $query->Where('title', 'like', '%' . $search . '%');
             })
+            ->with('Area')
+            ->with('City_api')
             ->orderBy('pin', 'desc')
             ->orderBy('created_at', 'desc')
             ->simplePaginate(12);
+        $data = $products->makeHidden(['created_at', 'area_id', 'city_id']);
+        $products->data = $data;
         for ($i = 0; $i < count($products); $i++) {
             $views = Product_view::where('product_id', $products[$i]['id'])->get()->count();
             $products[$i]['views'] = $views;
@@ -403,7 +458,7 @@ class ProductController extends Controller
             } else {
                 $products[$i]['favorite'] = false;
             }
-            $products[$i]['time'] =APIHelpers::get_month_day($products[$i]['created_at'],$lang);
+            $products[$i]['time'] =APIHelpers::get_time_day($products[$i]['created_at'],$lang);
         }
         $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
         return response()->json($response, 200);
@@ -979,16 +1034,47 @@ class ProductController extends Controller
         $ads['ended_ads'] = Product::where('status', 2)
             ->where('deleted', 0)
             ->where('user_id', auth()->user()->id)
-            ->select('id', 'title', 'price', 'main_image')
+            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->with('City_api')->simplePaginate(12);
+        $ended_ads = $ads['ended_ads']->makeHidden(['city_id', 'created_at']);
+        $ads['ended_ads']->data = $ended_ads;
         $ads['current_ads'] = Product::where('status', 1)
             ->where('publish', 'Y')
             ->where('deleted', 0)
             ->where('user_id', auth()->user()->id)
-            ->select('id', 'title', 'price', 'main_image')
+            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->with('City_api')->simplePaginate(12);
+        $current_ads = $ads['current_ads']->makeHidden(['city_id', 'created_at']);
+        $ads['current_ads']->data = $current_ads;
+        $user = auth()->user();
+        for ($i = 0; $i < count($ads['current_ads']); $i ++) {
+            $ads['current_ads'][$i]['time'] =APIHelpers::get_time_day($ads['current_ads'][$i]['created_at'],$request->lang);
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $ads['current_ads'][$i]['id'])->first();
+                if ($favorite) {
+                    $ads['current_ads'][$i]['favorite'] = true;
+                } else {
+                    $ads['current_ads'][$i]['favorite'] = false;
+                }
+            } else {
+                $ads['current_ads'][$i]['favorite'] = false;
+            }
+        }
+        for ($n = 0; $n < count($ads['ended_ads']); $n ++) {
+            $ads['ended_ads'][$n]['time'] =APIHelpers::get_time_day($ads['ended_ads'][$n]['created_at'],$request->lang);
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $ads['ended_ads'][$n]['id'])->first();
+                if ($favorite) {
+                    $ads['ended_ads'][$n]['favorite'] = true;
+                } else {
+                    $ads['ended_ads'][$n]['favorite'] = false;
+                }
+            } else {
+                $ads['ended_ads'][$n]['favorite'] = false;
+            }
+        }
         if (count($ads) == 0) {
             $response = APIHelpers::createApiResponse(false, 200, 'no ads yet !', ' !لا يوجد اعلانات حتى الان', null, $request->lang);
             return response()->json($response, 200);
@@ -1001,40 +1087,37 @@ class ProductController extends Controller
     public function last_seen(Request $request)
     {
         $user = auth()->user();
+        
         if ($user == null) {
             $response = APIHelpers::createApiResponse(true, 406, 'you should login first', 'يجب تسجيل الدخول اولا', null, $request->lang);
             return response()->json($response, 406);
         }
 
         $ads = Product_view::where('user_id', auth()->user()->id)
-            ->select('product_id', 'user_id')
-            ->orderBy('created_at', 'desc')
-            ->get();
-        $inc = 0;
-        foreach ($ads as $key => $row) {
-            $product = Product::where('id', $row->product_id)->first();
-            if ($product != null) {
-                if ($product->status == 1 && $product->deleted == 0 && $product->publish == 'Y') {
-                    $data[$inc]['id'] = $product->id;
-                    $data[$inc]['title'] = $product->title;
-                    $data[$inc]['image'] = $product->main_image;
-                    $data[$inc]['price'] = $product->price;
-                    $data[$inc]['description'] = $product->description;
-                    $favorite = Favorite::where('user_id', $user->id)->where('product_id', $product->id)->first();
-                    if ($favorite) {
-                        $data[$inc]['favorite'] = true;
-                    } else {
-                        $data[$inc]['favorite'] = false;
-                    }
-                    $inc = $inc + 1;
+            ->orderby('id', 'desc')
+            ->pluck('product_id')->toArray();
+        
+        
+        $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
+        // dd($ads);
+        for ($i = 0; $i < count($products); $i ++) {
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $products[$i]['id'])->first();
+                if ($favorite) {
+                    $products[$i]['favorite'] = true;
+                } else {
+                    $products[$i]['favorite'] = false;
                 }
+            } else {
+                $products[$i]['favorite'] = false;
             }
         }
-        if (count($data) == 0) {
+        
+        if (count($products) == 0) {
             $response = APIHelpers::createApiResponse(false, 200, 'no ads yet !', ' !لا يوجد اعلانات حتى الان', null, $request->lang);
             return response()->json($response, 200);
         } else {
-            $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+            $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
             return response()->json($response, 200);
         }
     }
@@ -1059,6 +1142,7 @@ class ProductController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
         $inc = 0;
+        $data = [];
         foreach ($ads as $key => $row) {
             $data[$inc]['id'] = $row->id;
             $data[$inc]['title'] = $row->title;
@@ -1154,7 +1238,7 @@ class ProductController extends Controller
         $data['ad'] = Product::where('id', $id)
             ->with('City_api')
             ->with('Area_api')
-            ->select('id', 'category_id', 'sub_category_id', 'sub_category_two_id', 'sub_category_three_id', 'sub_category_four_id', 'sub_category_five_id', 'title', 'price', 'description', 'main_image','city_id','area_id','share_location','latitude','longitude')
+            ->select('id', 'category_id', 'sub_category_id', 'title', 'price', 'description', 'main_image','city_id','area_id','share_location','latitude','longitude', 'address')
             ->get();
         $data['ad_images'] = ProductImage::where('product_id', $id)->select('id', 'image', 'product_id')->get();
         $response = APIHelpers::createApiResponse(false, 200, 'data shown', 'تم أظهار البيانات', $data, $request->lang);
@@ -1213,7 +1297,7 @@ class ProductController extends Controller
             'share_location' => 'required',
             'latitude' => 'required',
             'longitude' => 'required',
-            'options' => 'required',
+            // 'options' => 'required',
             'price' => 'required|numeric',
             'description' => '',
             'main_image' => '',

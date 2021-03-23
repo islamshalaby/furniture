@@ -66,6 +66,19 @@ class APIHelpers
         return $created_at->format('Y') . ' ' . $month;
     }
 
+    public static function get_time_day($created_at, $lang)
+    {
+        $period = $created_at->format('A');
+        if ($lang == 'ar') {
+            setlocale( LC_ALL,'ar' ); 
+            if ($period == 'pm') {
+                $period = 'م';
+            }else {
+                $period = 'ص';
+            }
+        }
+        return $created_at->format('h:i') . ' ' . $period;
+    }
     // get month day for the api
     public static function get_month_day($created_at, $lang)
     {

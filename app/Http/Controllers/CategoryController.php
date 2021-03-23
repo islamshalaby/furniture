@@ -20,13 +20,14 @@ use App\ProductImage;
 use App\Product_view;
 use App\Product;
 use App\SubFourCategory;
+use Illuminate\Support\Facades\Session;
 
 
 class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['show_six_cat', 'getCategoryOptions', 'show_five_cat', 'show_four_cat', 'show_third_cat', 'show_second_cat', 'show_first_cat', 'getcategories', 'getAdSubCategories', 'get_sub_categories_level2', 'get_sub_categories_level3', 'get_sub_categories_level4', 'get_sub_categories_level5', 'getproducts']]);
+        $this->middleware('auth:api', ['except' => ['show_six_cat', 'getCategoryOptions', 'show_five_cat', 'show_four_cat', 'show_third_cat', 'show_second_cat', 'show_first_cat', 'getcategories', 'getAdSubCategories', 'get_sub_categories_level2', 'get_sub_categories_level3', 'get_sub_categories_level4', 'get_sub_categories_level5', 'getproducts', 'getSubCategories', 'getProductsSubCategory']]);
     }
 
     public function getcategories(Request $request)
@@ -44,6 +45,60 @@ class CategoryController extends Controller
         }
         // $data = Categories_ad::select('image','ad_type','content as link')->where('type','category')->inRandomOrder()->take(1)->get();
         $response = APIHelpers::createApiResponse(false, 200, '', '', array('categories' => $categories), $request->lang);
+        return response()->json($response, 200);
+    }
+
+    /**
+     * islam code
+     **/
+    // get sub categories
+    public function getSubCategories(Request $request) {
+        $data['sub_categories'] = SubCategory::where('deleted', 0)->where('category_id', $request->category_id)->select('id', 'image', 'title_' .$request->lang . ' as title')->get()->toArray();
+        $title = 'All';
+        if ($request->lang == 'ar') {
+            $title = 'الكل';
+        }
+        $all = new \StdClass;
+        $all->id = 0;
+        $all->title = $title;
+        $all->image = 'all_liwbsi.png';
+        array_unshift($data['sub_categories'], $all);
+
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
+    // get products
+    public function getProductsSubCategory(Request $request) {
+        Session::put('local_api',$request->lang);
+        $products = Product::where('status', 1)->where('publish', 'Y')->where('deleted', 0)->where('category_id', $request->category_id);
+        if ($request->area_id && $request->area_id != 0) {
+            $products = $products->where('area_id', $request->area_id);
+        }
+        if ($request->sub_category_id != 0) {
+            $products = $products->where('sub_category_id', $request->sub_category_id);
+        }
+        $products = $products->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->orderBy('pin', 'DESC')->orderBy('created_at', 'desc')->with('City_api')->simplePaginate(12);
+        $data = $products->makeHidden(['created_at', 'city_id']);
+        $products->data = $data;
+        $user = auth()->user();
+        for ($i = 0; $i < count($products); $i ++) {
+            $products[$i]['time'] =APIHelpers::get_time_day($products[$i]['created_at'],$request->lang);
+            if ($user) {
+                $favorite = Favorite::where('user_id', $user->id)->where('product_id', $products[$i]['id'])->first();
+                if ($favorite) {
+                    $products[$i]['favorite'] = true;
+                } else {
+                    $products[$i]['favorite'] = false;
+                }
+            } else {
+                $products[$i]['favorite'] = false;
+            }
+        }
+        
+
+
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
         return response()->json($response, 200);
     }
 
@@ -676,7 +731,7 @@ class CategoryController extends Controller
                 $products[$i]['favorite'] = false;
             }
             $month = $products[$i]['created_at']->format('F');
-            $products[$i]['time'] =APIHelpers::get_month_day($products[$i]['created_at'],$lang);
+            $products[$i]['time'] =APIHelpers::get_time_day($products[$i]['created_at'],$lang);
         }
         $data['products'] = $products;
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);

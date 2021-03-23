@@ -314,6 +314,18 @@
         "offers" => "Offers",
         "outer_link_ads" => "Outer Link Ads",
         "products_ads" => "products Ads",
-        "offers_ads" => "Offers Ads"
+        "offers_ads" => "Offers Ads",
+        "show_home_sections" => "Show Home Page Sections",
+        "home_section_title" => "Home page section title",
+        "home_sections" => "Home Page Sections",
+        "add_new_home_section" => "Add New Home Page Section",
+        "drag&drop" => "Drag And Drop To Sort",
+        "home_section_details" => "Home Section Details",
+        "home_section_edit" => "Home Section Edit",
+        "sort" => "Sort",
+        "section_type" => "Section Type",
+        "slider" => "Slider",
+        "offer_images" => "Offer Images",
+        "edit_offer_slider" => "Edit Offer Slider"
     ];
 ?>

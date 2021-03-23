@@ -15,6 +15,8 @@ use App\Company;
 use App\Product;
 use App\ProductImage;
 use App\Favorite;
+use App\HomeSection;
+use App\HomeElement;
 use Carbon\Carbon;
 
 
@@ -163,55 +165,56 @@ class HomeController extends Controller
                 $pin_ad->save();
             }
         }
-        $one = Ad::select('id', 'image', 'type', 'content')->where('place', 1)->get();
-        $three = Ad::select('id', 'image', 'type', 'content')->where('place', 3)->get();
-        if (count($one) > 0) {
-            $data['ads_top'] = $one;
-        } else {
-            $data['ads_top'] = (object)[];
-        }
-        $lang = $request->lang;
-        $data['companies'] = Company::orderBy('id', 'desc')->select('id', 'logo', 'name_' . $lang . ' as name')->take(10)->get();
-        
-        // dd($companies);
-        if ($request->lang == 'en') {
-            $categories = Category::where('deleted', 0)->select('id', 'title_en as title', 'image')->get();
-        } else {
-            $categories = Category::where('deleted', 0)->select('id', 'title_ar as title', 'image')->get();
-        }
-        
-        $data['categories'] = $categories;
-        $data['offers'] = Ad::where('content_type', 2)->select('id', 'image')->get();
-        if ($lang == 'ar') {
-            $data['offer_image'] = Setting::where('id', 1)->first()->offer_image;
-        } else {
-            $data['offer_image'] = Setting::where('id', 1)->first()->offer_image_en;
-        }
-        $data['choose_to_you'] = Product::where('choose_it', 1)
-            ->where('status', 1)
-            ->where('publish', 'Y')
-            ->where('deleted', 0)
-            ->select('id', 'title', 'price', 'main_image as image', 'created_at')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($ads) use ($lang) {
-                if ($ads->price == null) {
-                    if ($lang == 'ar') {
-                        $ads->price = 'اسأل البائع';
-                    } else {
-                        $ads->price = 'Ask the seller';
-                    }
+        $home_data = HomeSection::where('section_type', 1)->orderBy('sort' , 'Asc')->get();
+        $data = [];
+        for($i = 0; $i < count($home_data); $i++){
+            $element = [];
+            $element['id'] = $home_data[$i]['id'];
+            $element['type'] = $home_data[$i]['type'];
+            if($request->lang == 'en'){
+                $element['title'] = $home_data[$i]['title_en'];
+            }else{
+                $element['title'] = $home_data[$i]['title_ar'];
+            }
+            $ids = HomeElement::where('home_id' , $home_data[$i]['id'])->pluck('element_id');
+            
+            if($home_data[$i]['type'] == 1){
+                
+                $element['data'] = Ad::select('id' ,'image' , 'type' , 'content')->whereIn('id' , $ids)->get();
+
+                array_push($data , $element);
+
+            }elseif($home_data[$i]['type'] == 2){
+                
+                if($request->lang == 'en'){
+                    $element['data'] = Category::select('id' ,'image' , 'title_en as title')->where('deleted' , 0)->whereIn('id' , $ids)->limit(5)->get()->toArray();
+                    
+                }else{
+                    $element['data'] = Category::select('id' ,'image' , 'title_ar as title')->where('deleted' , 0)->whereIn('id' , $ids)->has('products', '>', 0)->limit(5)->get()->toArray();
                 }
-                $ads->time = APIHelpers::get_month_day( $ads->created_at , $lang );
-                return $ads;
-            });
-        if (count($three) > 0) {
-            $data['ads_bottom'] = $three;
-        } else {
-            $data['ads_bottom'] = (object)[];
+                
+                array_push($data , $element);
+
+            }elseif($home_data[$i]['type'] == 3){
+
+                if($request->lang == 'en'){
+                    $element['data'] = Company::select('id' ,'logo' , 'name_en as title')->where('deleted' , 0)->whereIn('id' , $ids)->limit(5)->get();
+                }else{
+                    $element['data'] = Company::select('id' ,'logo' , 'name_ar as title')->where('deleted' , 0)->whereIn('id' , $ids)->limit(5)->get(); 
+                }                
+
+                array_push($data , $element);
+
+            }elseif($home_data[$i]['type'] == 5){
+
+                $element['data'] = Ad::select('id' ,'image' , 'type' , 'content')->whereIn('id' , $ids)->get();
+
+                array_push($data , $element);
+
+            }
         }
-        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
-        return response()->json($response, 200);
+        $response = APIHelpers::createApiResponse(false , 200 , '' , '' , $data , $request->lang);
+        return response()->json($response , 200);
     }
 
 //nasser code

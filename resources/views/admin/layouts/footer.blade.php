@@ -16,6 +16,8 @@
 <script src="/admin/bootstrap/js/bootstrap.min.js"></script>
 <script src="/admin/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
 <script src="/admin/assets/js/app.js"></script>
+<script src="/admin/plugins/select2/select2.min.js"></script>
+<script src="/admin/plugins/select2/custom-select2.js"></script>
 <script>
     $(document).ready(function () {
         App.init();

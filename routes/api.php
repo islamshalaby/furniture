@@ -34,6 +34,7 @@ use Illuminate\Http\Request;
     ], function($router) {
         Route::get('profile/{lang}/{v}' , 'UserController@getprofile');
         Route::put('profile/{lang}/{v}' , 'UserController@updateprofile');
+        Route::put('upload-image/{lang}/{v}' , 'UserController@uploadProfileIamge');
         Route::put('resetpassword/{lang}/{v}' , 'UserController@resetpassword');
         Route::put('resetforgettenpassword/{lang}/{v}' , 'UserController@resetforgettenpassword')->middleware('checkguest');
         Route::post('checkphoneexistance/{lang}/{v}' , 'UserController@checkphoneexistance')->middleware('checkguest');
@@ -79,6 +80,9 @@ use Illuminate\Http\Request;
     // offers
     Route::get('/offers/{lang}/{v}' , 'ProductController@getoffers')->middleware('checkguest');
 
+    // offer page
+    Route::get('/all-offers/{lang}/{v}' , 'ProductController@getOffersPage')->middleware('checkguest');
+
     // feature offers
     Route::get('/feature-offers/{lang}/{v}' , 'ProductController@getFeatureOffers')->middleware('checkguest');
 
@@ -87,6 +91,8 @@ use Illuminate\Http\Request;
         'prefix' => 'categories'
     ], function($router){
         Route::get('/{lang}/{v}' , 'CategoryController@getcategories')->middleware('checkguest');
+        Route::get('{category_id}/sub_categories/{lang}/{v}' , 'CategoryController@getSubCategories')->middleware('checkguest');
+        Route::get('{category_id}/sub_categories/{sub_category_id}/products/{lang}/{v}' , 'CategoryController@getProductsSubCategory')->middleware('checkguest');
     });
 
     // sub category level 1

@@ -115,7 +115,7 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
     //plan package
     Route::get('/get_plan/{id}' , 'ProductController@get_plan')->name('product.get_plan');
 
-    Route::resource('main_ads' , 'Ads\MainAdsController');
+    Route::resource('ads/main_ads' , 'Ads\MainAdsController');
     Route::get('main_ads/delete/{id}' , 'Ads\MainAdsController@destroy')->name('main_ads.delete');
 
 
@@ -198,7 +198,7 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
         Route::get('choose_to_you', 'ProductController@chooses')->name("products.choose_to_you");
         Route::get('make_offer/{id}', 'ProductController@make_offer')->name("products.make_offer");
         Route::get('make_choose/{id}', 'ProductController@make_choose')->name("products.make_choose");
-        Route::post('update/offer/baner', 'ProductController@update_baner')->name("update.offer.baner");
+        Route::post('update/offer/baner', 'ProductController@updateOfferSlider')->name("update.offer.baner");
         Route::post('update/offer/english/baner', 'ProductController@update_baner_english')->name("update.offer.baner_english");
 
         Route::get('show', 'ProductController@show')->name("products.index");
@@ -299,7 +299,22 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
     Route::get('models/create/{id}' , 'BrandTypeModelsController@create')->name("models.create.new");
     Route::get('model/update/{id}' , 'BrandTypeModelsController@update')->name("model.update.new");
     Route::get('models/delete/{id}' , 'BrandTypeModelsController@destroy')->name("models.delete");
-
+    
+    // Home Sections Route
+    Route::group([
+        "prefix" => "home_sections"
+    ], function($router){
+        Route::get('show' , 'HomeSectionsController@show')->name('home_sections.index');
+        Route::post('sort' , 'HomeSectionsController@updateSectionsSorting')->name('home_sections.sort');
+        Route::get('add' , 'HomeSectionsController@AddGet')->name('home_sections.add');
+        Route::get('fetch/{element}' , 'HomeSectionsController@fetchData');
+        Route::post('add' , 'HomeSectionsController@AddPost');
+        Route::get('edit/{homeSection}' , 'HomeSectionsController@EditGet')->name('home_sections.edit');
+        Route::post('edit/{homeSection}' , 'HomeSectionsController@EditPost');
+        Route::get('delete/{homeSection}' , 'HomeSectionsController@delete')->name('home_sections.delete');
+        Route::get('details/{homeSection}' , 'HomeSectionsController@details')->name('home_sections.details');
+    });
+    
     // company
     Route::resource('companies', 'CompanyController');
     Route::get('/companies/delete/{id}' , 'CompanyController@destroy')->name('delete.companies');

@@ -25,7 +25,7 @@
                             <th class="text-center">Id</th>
                             <th class="text-center">{{ __('messages.image') }}</th>
                             <th class="text-center">{{ __('messages.name') }}</th>
-                            <th class="text-center">{{ __('messages.sub_category_second') }}</th>
+                            {{--  <th class="text-center">{{ __('messages.sub_category_second') }}</th>  --}}
                             @if(Auth::user()->update_data)<th class="text-center">{{ __('messages.edit') }}</th>@endif
                             @if(Auth::user()->delete_data)<th class="text-center" >{{ __('messages.delete') }}</th>@endif
                         </tr>
@@ -37,7 +37,7 @@
                                 <td class="text-center"><?=$i;?></td>
                                 <td class="text-center"><img src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{ $row->image }}"  /></td>
                                 <td class="text-center blue-color">{{ app()->getLocale() == 'en' ? $row->title_en : $row->title_ar }}</td>
-                                <td class="text-center blue-color">
+                                {{--  <td class="text-center blue-color">
                                     <a href="{{route('sub_two_cat.show',$row->id)}}">
                                         <div class="">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
@@ -49,7 +49,7 @@
                                             </svg>
                                         </div>
                                     </a>
-                                </td>
+                                </td>  --}}
                                 @if(Auth::user()->update_data)
                                     <td class="text-center blue-color" ><a href="{{ route( 'sub_cat.edit', $row->id ) }}" ><i class="far fa-edit"></i></a></td>
                                 @endif

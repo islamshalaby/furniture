@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Ad;
+use App\Banner;
 use App\Category_option;
 use App\Category_option_value;
 use App\Helpers\APIHelpers;
@@ -23,6 +25,7 @@ use App\ProductImage;
 use App\Category;
 use App\User;
 use App\Setting;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends AdminController
 {
@@ -38,7 +41,29 @@ class ProductController extends AdminController
         $data['offer_image'] = Setting::where('id', 1)->first()->offer_image;
         $data['offer_image_en'] = Setting::where('id', 1)->first()->offer_image_en;
         $data['products'] = Product::where('offer', 1)->where('deleted', 0)->orderBy('id', 'desc')->get();
+        $data['banner_ids'] = Banner::orderBy('id', 'desc')->pluck('ad_id')->toArray();
+        $data['banners'] = Ad::whereIn('id', $data['banner_ids'])->where('type', '!=', 'offer')->select('id', 'image')->get();
+        $data['ads'] = Ad::where('type', '!=', 'offer')->select('id', 'image')->get();
+        // dd($data['ads']);
         return view('admin.products.offers', ['data' => $data]);
+    }
+
+    public function updateOfferSlider(Request $request) {
+        $post = $this->validate(\request(),
+            [
+                'ad_id' => 'required',
+            ]);
+            
+        if (isset($post['ad_id']) && count($post['ad_id']) > 0) {
+            DB::table('banners')->delete();
+            foreach($post['ad_id'] as $ad) {
+                $banner['ad_id'] = $ad;
+                // dd($banner);
+                Banner::create($banner);
+            }
+        }
+        session()->flash('success', trans('messages.updated_s'));
+        return redirect()->back();
     }
 
     public function chooses()
@@ -388,7 +413,8 @@ class ProductController extends AdminController
     public function get_sub_cat(Request $request, $id)
     {
         $data = SubCategory::where('category_id', $id)->where('deleted', 0)->get();
-        return view('admin.products.parts.categories.sub_category', compact('data'));
+        $cat_id = $id;
+        return view('admin.categories.sub_catyegory.index', compact(['data', 'cat_id']));
     }
 
     public function get_sub_two_cat(Request $request, $id)

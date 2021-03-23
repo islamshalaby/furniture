@@ -319,6 +319,18 @@ return [
     "offers" => "العروض",
     "outer_link_ads" => "إعلانات برابط خارجى",
     "products_ads" => "إعلانات لإعلانات المستخدمين",
-    "offers_ads" => "إعلانات للعروض"
+    "offers_ads" => "إعلانات للعروض",
+    "show_home_sections" => "عرض أقسام الصفحة الرئيسية",
+    "home_section_title" => "عنوان قسم الصفحة الرئيسية",
+    "home_sections" => "التحكم بالرئيسية",
+    "add_new_home_section" => "إضافة قسم للصفحة الرئيسية",
+    "drag&drop" => "قم بالسحب و الإفلات لترتيب العناصر",
+    "home_section_details" => "تفاصيل أقسام الصفحة الرئيسية",
+    "home_section_edit" => "تعديل قسم بالصفحة الرئيسية",
+    "sort" => "الترتيب",
+    "section_type" => "نوع القسم",
+    "slider" => "سلايدر",
+    "offer_images" => "صور العروض",
+    "edit_offer_slider" => "تعديل سلايدر العروض"
 ];
 ?>

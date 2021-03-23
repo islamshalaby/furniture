@@ -35,6 +35,8 @@
         <link rel="stylesheet" href="/admin/assets/css/custom.css">
         <link rel="stylesheet" type="text/css" href="https://www.fontstatic.com/f=dubai-medium" />
         <link rel="stylesheet" href="/admin/assets/css/ar.css">
+        <link rel="stylesheet" type="text/css" href="/admin/plugins/bootstrap-select/bootstrap-select.min.css">
+        <link rel="stylesheet" type="text/css" href="/admin/plugins/select2/select2.min.css">
 
         <!-- BEGIN animate modal PLUGINS -->
         <link href="/admin/rtl/plugins/animate/animate.css" rel="stylesheet" type="text/css" />
@@ -85,6 +87,9 @@
         <link href="/admin/plugins/animate/animate.css" rel="stylesheet" type="text/css" />
         <link href="/admin/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
         <!-- END animate modal PLUGINS/CUSTOM STYLES -->
+        <link rel="stylesheet" type="text/css" href="/admin/plugins/bootstrap-select/bootstrap-select.min.css">
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <link rel="stylesheet" type="text/css" href="/admin/plugins/select2/select2.min.css">
         <!--  BEGIN setting page  -->
         <link href="/admin/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css" />
         <link href="/admin/assets/css/components/tabs-accordian/custom-accordions.css" rel="stylesheet" type="text/css" />

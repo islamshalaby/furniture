@@ -55,7 +55,7 @@ class FavoriteController extends Controller
         }
 
         $validator = Validator::make($request->all() , [
-            'fav_id' => 'required',
+            'product_id' => 'required',
         ]);
 
         if($validator->fails()) {
@@ -63,7 +63,7 @@ class FavoriteController extends Controller
             return response()->json($response , 406);
         }
 
-        $favorite = Favorite::where('id' , $request->fav_id)->first();
+        $favorite = Favorite::where('product_id' , $request->product_id)->where('user_id', $user->id)->first();
         if($favorite){
             $favorite->delete();
             $response = APIHelpers::createApiResponse(false , 200 ,  'Deteted ', 'تم الحذف' , null, $request->lang);
@@ -80,29 +80,26 @@ class FavoriteController extends Controller
             $response = APIHelpers::createApiResponse(true , 406 ,  'تم حظر حسابك', 'تم حظر حسابك' , null, $request->lang );
             return response()->json($response , 406);
         }else {
-            $favorites = Favorite::select('id','product_id','user_id')
-                                 ->with('Product')
-                                 ->where('user_id', $user->id)
-                                 ->orderBy('id','desc')
-                                 ->get();
+            $ads = Favorite::orderBy('id','desc')
+                            ->pluck('product_id')->toArray();
 
-            $inc = 0;
-            foreach ($favorites as $key => $row){
-                $product = Product::where('id',$row->product_id)->first();
-                if($product != null){
-                    if($product->status == 1 && $product->deleted == 0 && $product->publish == 'Y'){
-                        $data[$inc]['id'] = $product->id;
-                        $data[$inc]['title'] = $product->title;
-                        $data[$inc]['image'] = $product->main_image;
-                        $data[$inc]['price'] = $product->price;
-                        $data[$inc]['description'] = $product->description;
-                        $inc =$inc + 1;
+            $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
+            for ($i = 0; $i < count($products); $i ++) {
+                $products[$i]['time'] = APIHelpers::get_time_day($products[$i]['created_at'], $request->lang);
+                if ($user) {
+                    $favorite = Favorite::where('user_id', $user->id)->where('product_id', $products[$i]['id'])->first();
+                    if ($favorite) {
+                        $products[$i]['favorite'] = true;
+                    } else {
+                        $products[$i]['favorite'] = false;
                     }
+                } else {
+                    $products[$i]['favorite'] = false;
                 }
             }
 
-            if(count($favorites) > 0) {
-                $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+            if(count($products) > 0) {
+                $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
             }else{
                 $response = APIHelpers::createApiResponse(false, 200, 'no item favorite to show', 'لا يوجد عناصر للعرض', null, $request->lang);
             }

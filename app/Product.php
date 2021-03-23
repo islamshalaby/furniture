@@ -18,7 +18,7 @@ class Product extends Model
         return $this->belongsTo('App\User', 'user_id');
     }
     public function Product_user() {
-        return $this->belongsTo('App\User', 'user_id')->select('id','image','name','email');
+        return $this->belongsTo('App\User', 'user_id')->select('id','image','name','email', 'phone');
     }
     public function Plan() {
         return $this->belongsTo('App\Plan', 'plan_id');
@@ -36,7 +36,7 @@ class Product extends Model
         return $this->belongsTo('App\City', 'city_id');
     }
     public function Area() {
-        return $this->belongsTo('App\Area', 'area_id');
+        return $this->belongsTo('App\Area', 'area_id')->select('id', 'title_' . session('local_api') . ' as title');
     }
 
     public function City_api() {

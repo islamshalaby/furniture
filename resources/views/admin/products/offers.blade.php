@@ -11,28 +11,23 @@
                         <h4>{{ __('messages.our_offers') }} {{ isset($data['user']) ? '( ' . $data['user'] . ' )' : '' }} {{ isset($data['category']) ? '( ' . $data['category'] . ' )' : '' }}</h4>
                     </div>
                 </div>
+                <h4>{{ __('messages.offer_images') }}</h4>
                 <div class="row">
-                    <div class="col-md-6">
-                        <h4>{{ __('messages.offer_image') }}</h4>
+                    @if (count($data['banners']) > 0)
+                    @foreach ($data['banners'] as $banner)
+                    <div class="col-md-3">
                         <div class="form-group mb-4">
                             <img style="height: 100px;"
-                                 src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{$data['offer_image']}}">
+                                 src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{$banner->image}}">
                         </div>
-                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                            <a class="btn btn-primary" data-toggle="modal"
-                               data-target="#offer_image_Modal">{{ __('messages.edit_offer_image') }}</a>
-                        </div>
+                        
                     </div>
-                    <div class="col-md-6">
-                        <h4>{{ __('messages.offer_image_en') }}</h4>
-                        <div class="form-group mb-4">
-                            <img style="height: 100px;"
-                                 src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{$data['offer_image_en']}}">
-                        </div>
-                        <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                            <a class="btn btn-primary" data-toggle="modal"
-                               data-target="#offer_image_en_Modal">{{ __('messages.edit_offer_image') }}</a>
-                        </div>
+                    @endforeach
+                    @endif
+                    
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <a class="btn btn-primary" data-toggle="modal"
+                        data-target="#offer_image_Modal">{{ __('messages.edit_offer_slider') }}</a>
                     </div>
                 </div>
             </div>
@@ -49,7 +44,7 @@
                             <th class="text-center">{{ __('messages.user') }}</th>
                             <th class="text-center">{{ __('messages.archived_or_not') }}</th>
                             <th class="text-center">{{ __('messages.our_offers') }}</th>
-                            <th class="text-center">{{ __('messages.choose_to_you') }}</th>
+                            {{--  <th class="text-center">{{ __('messages.choose_to_you') }}</th>  --}}
                             <th class="text-center">{{ __('messages.details') }}</th>
                             {{--                            @if(Auth::user()->update_data)--}}
                             {{--                                <th class="text-center">{{ __('messages.edit') }}</th>--}}
@@ -80,12 +75,13 @@
                                         @endif
                                     @endif
                                 </td>
-                                <td class="text-center">{{ $product->status == 1 ? __('messages.published') : __('messages.archived') }}</td>
                                 <td class="text-center">
                                     <a href="{{ route('users.details', $product->user->id) }}" target="_blank">
                                         {{ $product->user->name }}
                                     </a>
                                 </td>
+                                <td class="text-center">{{ $product->status == 1 ? __('messages.published') : __('messages.archived') }}</td>
+                                
                                 <td class="text-center blue-color">
                                     @if($product->offer == 1 )
                                         <a href="{{route('products.make_offer',$product->id)}}"
@@ -101,7 +97,7 @@
                                         </a>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                {{--  <td class="text-center">
                                     @if($product->choose_it == 1 )
                                         <a href="{{route('products.make_choose',$product->id)}}"
                                            class="btn btn-danger  mb-2 mr-2 rounded-circle" title=""
@@ -115,7 +111,7 @@
                                             <i class="far fa-gem"></i>
                                         </a>
                                     @endif
-                                </td>
+                                </td>  --}}
                                 <td class="text-center blue-color"><a
                                         href="{{ route('products.details', $product->id) }}"><i class="far fa-eye"></i></a>
                                 </td>
@@ -142,7 +138,7 @@
                 <!-- Modal content-->
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ __('messages.edit_offer_image') }}{{ __('messages.with_arabic') }}</h5>
+                        <h5 class="modal-title">{{ __('messages.edit_offer_slider') }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -155,19 +151,24 @@
                     <form action="{{route('update.offer.baner')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-body">
-                            <div class="custom-file-container" data-upload-id="myFirstImage">
-                                <label>{{ __('messages.upload') }} ({{ __('messages.single_image') }}) <a
-                                        href="javascript:void(0)" class="custom-file-container__image-clear"
-                                        title="Clear Image">x</a></label>
-                                <label class="custom-file-container__custom-file">
-                                    <input type="file" required name="image"
-                                           class="custom-file-container__custom-file__custom-file-input"
-                                           accept="image/*">
-                                    <input type="hidden" name="MAX_FILE_SIZE" value="10485760"/>
-                                    <span class="custom-file-container__custom-file__custom-file-control"></span>
-                                </label>
-                                <div class="custom-file-container__image-preview"></div>
+                            <div class="container">
+                                <div id="ads_check" class="row" >
+                                    
+                                    @if (count($data['ads']) > 0)
+                                    @foreach ($data['ads'] as $ad)
+                                    <div class="col-md-6" >
+                                        <div >
+                                            <label class="new-control new-checkbox new-checkbox-text checkbox-primary">
+                                                <input name="ad_id[]" value="{{ $ad->id }}" {{ in_array($ad->id, $data['banner_ids']) ? 'checked' : '' }} type="checkbox" class="new-control-input">
+                                                <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}" /></span>
+                                            </label>
+                                        </div>     
+                                    </div>
+                                    @endforeach
+                                    @endif
+                                </div>
                             </div>
+                            
                         </div>
                         <div class="modal-footer">
                             <input type="submit" value="{{ __('messages.edit') }}" class="btn btn-primary">
