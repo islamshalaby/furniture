@@ -57,7 +57,7 @@
                                 <tr>
                                     <td>{{ __('messages.ad') }}</td>
                                     <td>
-                                        <img src="https://res.cloudinary.com/dyyeedzqi/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}"  />
+                                        <img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}"  />
                                     </td>
                                 </tr>
                                 @endforeach          

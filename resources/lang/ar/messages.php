@@ -331,6 +331,7 @@ return [
     "section_type" => "نوع القسم",
     "slider" => "سلايدر",
     "offer_images" => "صور العروض",
-    "edit_offer_slider" => "تعديل سلايدر العروض"
+    "edit_offer_slider" => "تعديل سلايدر العروض",
+    "prefere_to" => "للحصول على تجربة إستخدام أفضل ، يوصى بإستخدام أحدث إصدار من Google chrome و windows 8 على الأقل"
 ];
 ?>

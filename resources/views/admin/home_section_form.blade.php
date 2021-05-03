@@ -39,7 +39,7 @@
                                     <div >
                                         <label class="new-control new-checkbox new-checkbox-text checkbox-primary">
                                             <input name="${section}" value="${ad.id}" type="${selection}" class="new-control-input">
-                                            <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/dyyeedzqi/image/upload/w_100,q_100/v1601416550/${ad.image}" /></span>
+                                            <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1601416550/${ad.image}" /></span>
                                         </label>
                                     </div>     
                                 </div>

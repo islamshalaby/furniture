@@ -18,7 +18,7 @@
                     <div class="col-md-3">
                         <div class="form-group mb-4">
                             <img style="height: 100px;"
-                                 src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{$banner->image}}">
+                                 src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{$banner->image}}">
                         </div>
                         
                     </div>
@@ -160,7 +160,7 @@
                                         <div >
                                             <label class="new-control new-checkbox new-checkbox-text checkbox-primary">
                                                 <input name="ad_id[]" value="{{ $ad->id }}" {{ in_array($ad->id, $data['banner_ids']) ? 'checked' : '' }} type="checkbox" class="new-control-input">
-                                                <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}" /></span>
+                                                <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}" /></span>
                                             </label>
                                         </div>     
                                     </div>

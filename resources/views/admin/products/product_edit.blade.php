@@ -27,7 +27,7 @@
         <label for="">{{ __('messages.main_image') }}</label><br>
         <div class="row">
             <div class="col-md-2 product_image">
-                <img style="width: 100%" src="https://res.cloudinary.com/carsads/image/upload/w_100,q_100/v1581928924/{{ $data->main_image }}"  />
+                <img style="width: 100%" src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{ $data->main_image }}"  />
             </div>
         </div>
         <div class="custom-file-container" data-upload-id="mySecondImage">
