@@ -42,8 +42,9 @@ class ProductController extends AdminController
         $data['offer_image_en'] = Setting::where('id', 1)->first()->offer_image_en;
         $data['products'] = Product::where('offer', 1)->where('deleted', 0)->orderBy('id', 'desc')->get();
         $data['banner_ids'] = Banner::orderBy('id', 'desc')->pluck('ad_id')->toArray();
-        $data['banners'] = Ad::whereIn('id', $data['banner_ids'])->where('type', '!=', 'offer')->select('id', 'image')->get();
-        $data['ads'] = Ad::where('type', '!=', 'offer')->select('id', 'image')->get();
+        $data['banners'] = Ad::whereIn('id', $data['banner_ids'])->where('type', 'offer')->select('id', 'image')->get();
+        // dd($data['banners']);
+        $data['ads'] = Ad::where('type', 'offer')->select('id', 'image')->get();
         // dd($data['ads']);
         return view('admin.products.offers', ['data' => $data]);
     }

@@ -332,6 +332,7 @@ class ProductController extends Controller
     // islam code
     // get offers page
     public function getOffersPage(Request $request) {
+        
         $products = Product::where('offer', 1)->where('status', 1)
         ->where('publish', 'Y')
         ->where('deleted', 0)

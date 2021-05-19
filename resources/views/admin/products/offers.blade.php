@@ -6,13 +6,8 @@
     <div id="tableSimple" class="col-lg-12 col-12 layout-spacing">
         <div class="statbox widget box box-shadow">
             <div class="widget-header">
-                <div class="row">
-                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                        <h4>{{ __('messages.our_offers') }} {{ isset($data['user']) ? '( ' . $data['user'] . ' )' : '' }} {{ isset($data['category']) ? '( ' . $data['category'] . ' )' : '' }}</h4>
-                    </div>
-                </div>
                 <h4>{{ __('messages.offer_images') }}</h4>
-                <div class="row">
+                {{-- <div class="row">
                     @if (count($data['banners']) > 0)
                     @foreach ($data['banners'] as $banner)
                     <div class="col-md-3">
@@ -30,7 +25,13 @@
                         data-target="#offer_image_Modal">{{ __('messages.edit_offer_slider') }}</a>
                     </div>
                 </div>
-            </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <h4>{{ __('messages.our_offers') }} {{ isset($data['user']) ? '( ' . $data['user'] . ' )' : '' }} {{ isset($data['category']) ? '( ' . $data['category'] . ' )' : '' }}</h4>
+                    </div>
+                </div>
+                
+            </div> --}}
             <div class="widget-content widget-content-area">
                 <div class="table-responsive">
                     <table id="html5-extension" class="table table-hover non-hover" style="width:100%">
