@@ -111,6 +111,9 @@ use Illuminate\Http\Request;
     // get home data
     Route::get('/home/{lang}/{v}' , 'HomeController@gethome')->middleware('checkguest');
 
+    // get slider data
+    Route::get('/slider/{lang}/{v}' , 'HomeController@getSlider');
+
     // get home data
     Route::get('/home-ads/{lang}/{v}' , 'HomeController@getHomeAds')->middleware('checkguest');
 
@@ -194,6 +197,10 @@ use Illuminate\Http\Request;
     Route::get('/my_balance/{lang}/{v}' , 'UserController@my_balance');
     Route::get('company_details/{id}/{lang}/{v}' , 'UserController@companyDetails');
     Route::get('companies/{lang}/{v}' , 'HomeController@getCompanies');
+    Route::get('home-companies/{lang}/{v}' , 'HomeController@getHomeCompanies');
+    Route::get('home-categories/{lang}/{v}' , 'HomeController@getHomeCategories');
+    
+    
     
     Route::group([
         'middleware' => 'api'

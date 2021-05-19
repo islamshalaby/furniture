@@ -11,4 +11,8 @@ class Category extends Model
     public function products() {
         return $this->hasMany('App\Product', 'category_id');
     }
+
+    public function subCategories($lang) {
+        return $this->hasMany('App\SubCategory', 'category_id')->select('id', 'image', 'title_' . $lang . ' as title');
+    }
 }

@@ -72,11 +72,14 @@ class CategoryController extends Controller
     public function getProductsSubCategory(Request $request) {
         Session::put('local_api',$request->lang);
         $products = Product::where('status', 1)->where('publish', 'Y')->where('deleted', 0)->where('category_id', $request->category_id);
+        
         if ($request->area_id && $request->area_id != 0) {
+            $allData['area_id'] = $request->area_id;
             $products = $products->where('area_id', $request->area_id);
         }
-        if ($request->sub_category_id != 0) {
-            $products = $products->where('sub_category_id', $request->sub_category_id);
+        if ($request->sub_category_two_id && $request->sub_category_two_id != 0) {
+            $allData['sub_category_two_id'] = $request->sub_category_two_id;
+            $products = $products->where('sub_category_two_id', $request->sub_category_two_id);
         }
         $products = $products->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->orderBy('pin', 'DESC')->orderBy('created_at', 'desc')->with('City_api')->simplePaginate(12);
         $data = $products->makeHidden(['created_at', 'city_id']);
@@ -96,9 +99,9 @@ class CategoryController extends Controller
             }
         }
         
+        $allData['products'] = $products;
 
-
-        $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $allData, $request->lang);
         return response()->json($response, 200);
     }
 

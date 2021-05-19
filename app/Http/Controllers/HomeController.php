@@ -18,13 +18,14 @@ use App\Favorite;
 use App\HomeSection;
 use App\HomeElement;
 use Carbon\Carbon;
+use App\Slider;
 
 
 class HomeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['balance_packages', 'gethome', 'getHomeAds', 'check_ad', 'main_ad']]);
+        $this->middleware('auth:api', ['except' => ['balance_packages', 'gethome', 'getHomeAds', 'check_ad', 'main_ad', 'getSlider', 'getHomeCompanies', 'getHomeCategories']]);
     }
 
     public function gethome(Request $request)
@@ -106,6 +107,21 @@ class HomeController extends Controller
             // $data['offers'][$i]['favorite'] = false;
 
         }
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
+    public function getSlider(Request $request) {
+        $slider = Slider::orderBy('id', 'desc')->get();
+        // dd($slider);
+        $data = [];
+
+        if (count($slider) > 0) {
+            for ($i = 0; $i < count($slider); $i ++) {
+                array_push($data, $slider[$i]->ad);
+            }
+        }
+
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
         return response()->json($response, 200);
     }
@@ -257,10 +273,45 @@ class HomeController extends Controller
         return response()->json($response, 200);
     }
 
+    // get home companies
+    public function getHomeCompanies(Request $request) {
+        $data = Company::select('id', 'logo', 'name_' . $request->lang . ' as name')->orderBy('id', 'desc')->get();
+
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
     // get companies
     public function getCompanies(Request $request) {
         $data = Company::select('id', 'logo', 'name_' . $request->lang . ' as name')->orderBy('id', 'desc')->simplePaginate(20);
 
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
+    // get home categories
+    public function getHomeCategories(Request $request) {
+        $categories = Category::where('deleted', 0)->select('id', 'image', 'title_' . $request->lang . ' as title')->get();
+        $data = [];
+        if (count($categories) > 0) {
+            for($i = 0; $i < count($categories); $i ++) {
+                $categories[$i]['sub_categories'] = $categories[$i]->subCategories($request->lang)->get()->makeHidden('subCategoriesTwo');
+                if (count($categories[$i]['sub_categories']) > 0) {
+                    for ($n = 0; $n < count($categories[$i]['sub_categories']); $n ++) {
+                        $categories[$i]['sub_categories'][$n]['type'] = 1;
+                        if (count($categories[$i]['sub_categories'][$n]->subCategoriesTwo) > 0) {
+                            $categories[$i]['sub_categories'][$n]['type'] = 2;
+                        }
+                    }
+                }
+                array_push($data, $categories[$i]);
+                // if ($i % 1 == 0) {
+                //     $offers = Ad::select('id' ,'image' , 'type' , 'content')->get();
+                //     array_push($data, $offers);
+                // }
+            }
+        }
+        
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
         return response()->json($response, 200);
     }
