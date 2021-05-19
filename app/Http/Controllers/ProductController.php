@@ -212,7 +212,7 @@ class ProductController extends Controller
         } else {
             $prod_view = Product_view::where('ip', $user_ip_address)->where('product_id', $data->id)->first();
             if ($prod_view == null) {
-                $data_view['user_id'] = $user->id;
+                $data_view['user_id'] = $data->user_id;
                 $data_view['ip'] = $user_ip_address;
                 $data_view['product_id'] = $data->id;
                 Product_view::create($data_view);
@@ -261,7 +261,7 @@ class ProductController extends Controller
             ->where('status', 1)
             ->where('publish', 'Y')
             ->where('deleted', 0)
-            ->where('user_id', $user->id)
+            ->where('user_id', $data->user_id)
             ->with('city_api')
             ->select('id', 'title', 'price', 'main_image as image', 'created_at', 'views', 'city_id')
             ->limit(3)
