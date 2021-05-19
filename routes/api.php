@@ -74,7 +74,7 @@ use Illuminate\Http\Request;
     ] , function($router){
         Route::post('create/{lang}/{v}' , 'ProductController@create');
         Route::post('uploadimages/{lang}/{v}' , 'ProductController@uploadimages');
-        Route::get('details/{id}/{lang}/{v}' , 'ProductController@getdetails')->middleware('checkguest');
+        Route::get('details/{id}/{lang}/{v}' , 'ProductController@getdetails');
     });
 
     // offers
