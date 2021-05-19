@@ -32,6 +32,9 @@ final class Throws extends TagWithType implements Factory\StaticMethod
         $this->description = $description;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function create(
         string $body,
         ?TypeResolver $typeResolver = null,
@@ -51,14 +54,6 @@ final class Throws extends TagWithType implements Factory\StaticMethod
 
     public function __toString() : string
     {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $type = (string) $this->type;
-
-        return $type . ($description !== '' ? ($type !== '' ? ' ' : '') . $description : '');
+        return (string) $this->type . ' ' . (string) $this->description;
     }
 }

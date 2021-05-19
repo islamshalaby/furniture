@@ -28,7 +28,7 @@ final class Source extends BaseTag implements Factory\StaticMethod
     protected $name = 'source';
 
     /** @var int The starting line, relative to the structural element's location. */
-    private $startingLine;
+    private $startingLine = 1;
 
     /** @var int|null The number of lines, relative to the starting line. NULL means "to the end". */
     private $lineCount;
@@ -47,6 +47,9 @@ final class Source extends BaseTag implements Factory\StaticMethod
         $this->description  = $description;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function create(
         string $body,
         ?DescriptionFactory $descriptionFactory = null,
@@ -96,22 +99,8 @@ final class Source extends BaseTag implements Factory\StaticMethod
 
     public function __toString() : string
     {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $startingLine = (string) $this->startingLine;
-
-        $lineCount = $this->lineCount !== null ? '' . $this->lineCount : '';
-
-        return $startingLine
-            . ($lineCount !== ''
-                ? ($startingLine || $startingLine === '0' ? ' ' : '') . $lineCount
-                : '')
-            . ($description !== ''
-                ? ($startingLine || $startingLine === '0' || $lineCount !== '' ? ' ' : '') . $description
-                : '');
+        return $this->startingLine
+            . ($this->lineCount !== null ? ' ' . $this->lineCount : '')
+            . ($this->description ? ' ' . (string) $this->description : '');
     }
 }

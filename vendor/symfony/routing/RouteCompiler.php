@@ -19,14 +19,14 @@ namespace Symfony\Component\Routing;
  */
 class RouteCompiler implements RouteCompilerInterface
 {
-    public const REGEX_DELIMITER = '#';
+    const REGEX_DELIMITER = '#';
 
     /**
      * This string defines the characters that are automatically considered separators in front of
      * optional placeholders (with default and no static text following). Such a single separator
      * can be left out together with the optional placeholder from matching and generating URLs.
      */
-    public const SEPARATORS = '/,;.:-_~+*=@|';
+    const SEPARATORS = '/,;.:-_~+*=@|';
 
     /**
      * The maximum supported length of a PCRE subpattern name
@@ -34,7 +34,7 @@ class RouteCompiler implements RouteCompilerInterface
      *
      * @internal
      */
-    public const VARIABLE_MAXIMUM_LENGTH = 32;
+    const VARIABLE_MAXIMUM_LENGTH = 32;
 
     /**
      * {@inheritdoc}
@@ -59,14 +59,6 @@ class RouteCompiler implements RouteCompilerInterface
 
             $hostTokens = $result['tokens'];
             $hostRegex = $result['regex'];
-        }
-
-        $locale = $route->getDefault('_locale');
-        if (null !== $locale && null !== $route->getDefault('_canonical_route') && preg_quote($locale, self::REGEX_DELIMITER) === $route->getRequirement('_locale')) {
-            $requirements = $route->getRequirements();
-            unset($requirements['_locale']);
-            $route->setRequirements($requirements);
-            $route->setPath(str_replace('{_locale}', $locale, $route->getPath()));
         }
 
         $path = $route->getPath();
@@ -119,7 +111,7 @@ class RouteCompiler implements RouteCompilerInterface
 
         // Match all variables enclosed in "{}" and iterate over them. But we only want to match the innermost variable
         // in case of nested "{}", e.g. {foo{bar}}. This in ensured because \w does not match "{" or "}" itself.
-        preg_match_all('#\{(!)?(\w+)\}#', $pattern, $matches, \PREG_OFFSET_CAPTURE | \PREG_SET_ORDER);
+        preg_match_all('#\{(!)?(\w+)\}#', $pattern, $matches, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
         foreach ($matches as $match) {
             $important = $match[1][1] >= 0;
             $varName = $match[2][0];
@@ -147,7 +139,7 @@ class RouteCompiler implements RouteCompilerInterface
             }
 
             if (\strlen($varName) > self::VARIABLE_MAXIMUM_LENGTH) {
-                throw new \DomainException(sprintf('Variable name "%s" cannot be longer than %d characters in route pattern "%s". Please use a shorter name.', $varName, self::VARIABLE_MAXIMUM_LENGTH, $pattern));
+                throw new \DomainException(sprintf('Variable name "%s" cannot be longer than %s characters in route pattern "%s". Please use a shorter name.', $varName, self::VARIABLE_MAXIMUM_LENGTH, $pattern));
             }
 
             if ($isSeparator && $precedingText !== $precedingChar) {
@@ -207,7 +199,7 @@ class RouteCompiler implements RouteCompilerInterface
         }
 
         // find the first optional token
-        $firstOptional = \PHP_INT_MAX;
+        $firstOptional = PHP_INT_MAX;
         if (!$isHost) {
             for ($i = \count($tokens) - 1; $i >= 0; --$i) {
                 $token = $tokens[$i];

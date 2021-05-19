@@ -151,11 +151,7 @@ class MorphTo extends BelongsTo
     {
         $class = Model::getActualClassNameForMorph($type);
 
-        return tap(new $class, function ($instance) {
-            if (! $instance->getConnectionName()) {
-                $instance->setConnection($this->getConnection()->getName());
-            }
-        });
+        return new $class;
     }
 
     /**

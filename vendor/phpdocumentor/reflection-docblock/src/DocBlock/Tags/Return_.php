@@ -32,6 +32,9 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
         $this->description = $description;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public static function create(
         string $body,
         ?TypeResolver $typeResolver = null,
@@ -51,14 +54,6 @@ final class Return_ extends TagWithType implements Factory\StaticMethod
 
     public function __toString() : string
     {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $type = $this->type ? '' . $this->type : 'mixed';
-
-        return $type . ($description !== '' ? ($type !== '' ? ' ' : '') . $description : '');
+        return ($this->type ?: 'mixed') . ' ' . (string) $this->description;
     }
 }

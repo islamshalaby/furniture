@@ -1,110 +1,39 @@
-<?php
-/**
- * This file is part of the Cloudinary PHP package.
- *
- * (c) Cloudinary
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
+<?php namespace Cloudinary\Cache;
 
-namespace Cloudinary\Cache;
-
-use Cloudinary\ArrayUtils;
-use Cloudinary\Asset\BaseMediaAsset;
-use Cloudinary\Asset\Image;
 use Cloudinary\Cache\Adapter\CacheAdapter;
-use Cloudinary\ClassUtils;
-use Cloudinary\Configuration\Configuration;
-use Cloudinary\Configuration\ResponsiveBreakpointsConfig;
-use Cloudinary\Exception\Error;
-use Cloudinary\HttpClient;
-use Cloudinary\Log\LoggerTrait;
-use Cloudinary\Transformation\Qualifier\Misc\BreakpointsJson;
-use Exception;
+use Cloudinary\Utils\Singleton;
 use InvalidArgumentException;
 
 /**
- * Caches breakpoint values for image assets.
- *
- * @api
+ * Caches breakpoint values for image resources.
+ * @package Cloudinary\Cache
  */
-class ResponsiveBreakpointsCache
+class ResponsiveBreakpointsCache extends Singleton
 {
-    use LoggerTrait;
-
-    /**
-     * @var bool|ResponsiveBreakpointsCache $instance The instance of the cache.
-     */
-    private static $instance = false;
 
     /**
      * @var CacheAdapter The cache adapter used to store and retrieve values.
      */
     protected $cacheAdapter;
 
-    /**
-     * @var ResponsiveBreakpointsConfig $config The configuration of the cache.
-     */
-    protected $config;
-
-    /**
-     * @var HttpClient $client The HTTP client.
-     */
-    protected $client;
-
-    /**
-     * ResponsiveBreakpointsCache constructor.
-     *
-     * @param Configuration|null $configuration
-     *
-     * @api
-     */
-    public function __construct($configuration = null)
+    protected function __construct()
     {
-        $this->client = new HttpClient($configuration);
-
-        $this->init($configuration);
+        $this->init();
     }
 
     /**
-     * Returns a singleton instance of the cache.
-     *
-     * @param Configuration|null $config Optional configuration to pass during the first initialization.
-     *
-     * @return bool|ResponsiveBreakpointsCache
+     * Initialize the cache
+     * @param array $cacheOptions Cache configuration options.
      */
-    public static function instance($config = null)
+    public function init($cacheOptions = array())
     {
-        if (self::$instance === false) {
-            self::$instance = new static($config);
-        }
+        $cacheAdapter = \Cloudinary::option_get($cacheOptions, "cache_adapter");
 
-        return self::$instance;
+        $this->setCacheAdapter($cacheAdapter);
     }
 
     /**
-     * Initializes the cache.
-     *
-     * @param Configuration|array|null $configuration
-     */
-    public function init($configuration = null)
-    {
-        if ($configuration === null) {
-            $configuration = Configuration::instance(); // get global instance
-        }
-
-        /** @noinspection CallableParameterUseCaseInTypeContextInspection */
-        $configuration = ClassUtils::verifyInstance($configuration, Configuration::class);
-
-        $this->config = new ResponsiveBreakpointsConfig($configuration->responsiveBreakpoints);
-        $this->logging = $configuration->logging;
-
-        $this->setCacheAdapter($this->config->cacheAdapter);
-    }
-
-    /**
-     * Assigns cache adapter.
+     * Assigns cache adapter
      *
      * @param CacheAdapter $cacheAdapter The cache adapter used to store and retrieve values.
      *
@@ -112,7 +41,7 @@ class ResponsiveBreakpointsCache
      */
     public function setCacheAdapter($cacheAdapter)
     {
-        if ($cacheAdapter === null || ! $cacheAdapter instanceof CacheAdapter) {
+        if (is_null($cacheAdapter) || ! $cacheAdapter instanceof CacheAdapter) {
             return false;
         }
 
@@ -122,148 +51,103 @@ class ResponsiveBreakpointsCache
     }
 
     /**
-     * Indicates whether cache is enabled or not.
+     * Indicates whether cache is enabled or not
      *
-     * @return bool true if a cache adapter has been set.
+     * @return bool true if a $cach adapter has been set.
      */
     public function enabled()
     {
-        return $this->cacheAdapter !== null;
+        return !is_null($this->cacheAdapter);
     }
 
     /**
-     * Extracts the parameters required in order to calculate the key of the cache.
+     * Extract the parameters required in order to calculate the key of the cache.
      *
-     * @param BaseMediaAsset $asset
+     * @param array $options Input options
      *
      * @return array A list of values used to calculate the cache key.
      */
-    private static function extractParameters($asset)
+    private static function optionsToParameters($options)
     {
-        $json = $asset->jsonSerialize();
+        $optionsCopy = \Cloudinary::array_copy($options);
+        $transformation = \Cloudinary::generate_transformation_string($optionsCopy);
+        $format = \Cloudinary::option_get($options, "format", "");
+        $type = \Cloudinary::option_get($options, "type", "upload");
+        $resourceType = \Cloudinary::option_get($options, "resource_type", "image");
 
-        $publicId       = $asset->getPublicId(true);
-        $transformation = $asset->getTransformation();
-        $format         = ArrayUtils::get($json, ['asset', 'extension']);
-        $type           = ArrayUtils::get($json, ['asset', 'delivery_type']);
-        $resourceType   = ArrayUtils::get($json, ['asset', 'asset_type']);
-
-        return [$publicId, $type, $resourceType, $transformation, $format];
-    }
-
-
-    /**
-     * Fetches breakpoints from Cloudinary.
-     *
-     * @param Image $asset
-     *
-     * @return array
-     * @throws Error
-     */
-    protected function fetchBreakpoints($asset)
-    {
-        $c                    = $this->config;
-        $breakpointsJsonParam = new BreakpointsJson($c->minWidth, $c->minWidth, $c->bytesStep, $c->maxImages);
-
-        $breakpointsUrl = $asset->toUrl($breakpointsJsonParam);
-
-        return $this->client->getJson($breakpointsUrl)['breakpoints'];
+        return [$type, $resourceType, $transformation, $format];
     }
 
     /**
      * Retrieve the breakpoints of a particular derived resource identified by the $publicId and $options
      *
-     * @param Image     $asset
-     *
-     * @param bool|null $fetchMissing Indicates whether try to bring missing breakpoints from Cloudinary
+     * @param string $publicId  The public ID of the resource
+     * @param array  $options   Additional options
      *
      * @return array|null Array of responsive breakpoints, null if not found
      */
-    public function get($asset, $fetchMissing = null)
+    public function get($publicId, $options = [])
     {
-        if (! $this->enabled()) {
+        if (!$this->enabled()) {
             return null;
         }
 
-        $breakpoints = $this->cacheAdapter->get(...self::extractParameters($asset));
+        list($type, $resourceType, $transformation, $format) = self::optionsToParameters($options);
 
-        if ($breakpoints !== null) {
-            return $breakpoints;
-        }
-
-        // Cache miss :(
-
-        if ($fetchMissing === null) {
-            $fetchMissing = $this->config->fetchMissing;
-        }
-
-        if ($fetchMissing !== true) {
-            return null; // no fetch - no breakpoints :)
-        }
-
-        try {
-            $breakpoints = $this->fetchBreakpoints($asset);
-        } catch (Exception $e) {
-            error_log("Failed fetching responsive breakpoints: $e");
-        }
-
-        if ($breakpoints !== null) {
-            $this->set($asset, $breakpoints); // Keep fetched breakpoints
-        }
-
-        return $breakpoints;
+        return $this->cacheAdapter->get($publicId, $type, $resourceType, $transformation, $format);
     }
 
     /**
      * Sets responsive breakpoints identified by public ID and options
      *
-     * @param BaseMediaAsset $asset The asset.
-     * @param array $value Array of responsive breakpoints to set
+     * @param string  $publicId The public ID of the resource
+     * @param array   $options  Additional options
+     * @param array   $value    Array of responsive breakpoints to set
      *
      * @return bool true on success or false on failure
      */
-    public function set($asset, $value = [])
+    public function set($publicId, $options = [], $value = [])
     {
-        if (! $this->enabled()) {
+        if (!$this->enabled()) {
             return false;
         }
 
         if (! is_array($value)) {
-            $message = 'An array of breakpoints is expected';
-            $this->getLogger()->critical($message, ['class' => static::class, 'value' => $value]);
-            throw new InvalidArgumentException($message);
+            throw new InvalidArgumentException("An array of breakpoints is expected");
         }
 
-        $params    = self::extractParameters($asset);
-        $params [] = $value;
+        list($type, $resourceType, $transformation, $format) = self::optionsToParameters($options);
 
-        return $this->cacheAdapter->set(...$params);
+        return $this->cacheAdapter->set($publicId, $type, $resourceType, $transformation, $format, $value);
     }
 
     /**
      * Delete responsive breakpoints identified by public ID and options
      *
-     * @param Image $asset The asset.
+     * @param string  $publicId The public ID of the resource
+     * @param array   $options  Additional options
      *
      * @return bool true on success or false on failure
      */
-    public function delete($asset)
+    public function delete($publicId, $options = [])
     {
-        if (! $this->enabled()) {
+        if (!$this->enabled()) {
             return false;
         }
 
-        return $this->cacheAdapter->delete(...self::extractParameters($asset));
+        list($type, $resourceType, $transformation, $format) = self::optionsToParameters($options);
+
+        return $this->cacheAdapter->delete($publicId, $type, $resourceType, $transformation, $format);
     }
 
     /**
-     * Flushes all entries from the cache
+     * Flushe all entries from cache
      *
      * @return bool true on success or false on failure
      */
     public function flushAll()
     {
-        if (! $this->enabled()) {
+        if (!$this->enabled()) {
             return false;
         }
 

@@ -11,7 +11,7 @@
 
 namespace Symfony\Component\Debug\Exception;
 
-@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.4, use "%s" instead.', FatalErrorException::class, \Symfony\Component\ErrorHandler\Error\FatalError::class), \E_USER_DEPRECATED);
+@trigger_error(sprintf('The "%s" class is deprecated since Symfony 4.4, use "%s" instead.', FatalErrorException::class, \Symfony\Component\ErrorHandler\Error\FatalError::class), E_USER_DEPRECATED);
 
 /**
  * Fatal Error Exception.
@@ -35,7 +35,8 @@ class FatalErrorException extends \ErrorException
 
             $this->setTrace($trace);
         } elseif (null !== $traceOffset) {
-            if (\function_exists('xdebug_get_function_stack') && $trace = @xdebug_get_function_stack()) {
+            if (\function_exists('xdebug_get_function_stack')) {
+                $trace = xdebug_get_function_stack();
                 if (0 < $traceOffset) {
                     array_splice($trace, -$traceOffset);
                 }
@@ -73,7 +74,7 @@ class FatalErrorException extends \ErrorException
 
     protected function setTrace($trace)
     {
-        $traceReflector = new \ReflectionProperty(\Exception::class, 'trace');
+        $traceReflector = new \ReflectionProperty('Exception', 'trace');
         $traceReflector->setAccessible(true);
         $traceReflector->setValue($this, $trace);
     }

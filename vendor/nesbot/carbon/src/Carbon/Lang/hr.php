@@ -24,7 +24,7 @@
  * - Serhan Apaydın
  * - JD Isaacks
  * - tomhorvat
- * - Stjepan Majdak
+ * - Stjepan
  * - Vanja Retkovac (vr00)
  */
 return [
@@ -48,21 +48,17 @@ return [
     'after' => ':time poslije',
     'before' => ':time prije',
     'diff_now' => 'sad',
-    'diff_today' => 'danas',
-    'diff_today_regexp' => 'danas(?:\\s+u)?',
     'diff_yesterday' => 'jučer',
-    'diff_yesterday_regexp' => 'jučer(?:\\s+u)?',
     'diff_tomorrow' => 'sutra',
-    'diff_tomorrow_regexp' => 'sutra(?:\\s+u)?',
     'diff_before_yesterday' => 'prekjučer',
     'diff_after_tomorrow' => 'prekosutra',
     'formats' => [
         'LT' => 'H:mm',
         'LTS' => 'H:mm:ss',
-        'L' => 'D. M. YYYY.',
-        'LL' => 'D. MMMM YYYY.',
-        'LLL' => 'D. MMMM YYYY. H:mm',
-        'LLLL' => 'dddd, D. MMMM YYYY. H:mm',
+        'L' => 'DD.MM.YYYY',
+        'LL' => 'D. MMMM YYYY',
+        'LLL' => 'D. MMMM YYYY H:mm',
+        'LLLL' => 'dddd, D. MMMM YYYY H:mm',
     ],
     'calendar' => [
         'sameDay' => '[danas u] LT',
@@ -97,7 +93,7 @@ return [
     'months' => ['siječnja', 'veljače', 'ožujka', 'travnja', 'svibnja', 'lipnja', 'srpnja', 'kolovoza', 'rujna', 'listopada', 'studenoga', 'prosinca'],
     'months_standalone' => ['siječanj', 'veljača', 'ožujak', 'travanj', 'svibanj', 'lipanj', 'srpanj', 'kolovoz', 'rujan', 'listopad', 'studeni', 'prosinac'],
     'months_short' => ['sij.', 'velj.', 'ožu.', 'tra.', 'svi.', 'lip.', 'srp.', 'kol.', 'ruj.', 'lis.', 'stu.', 'pro.'],
-    'months_regexp' => '/(D[oD]?(\[[^\[\]]*\]|\s)+MMMM?|L{2,4}|l{2,4})/',
+    'months_regexp' => '/D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/',
     'weekdays' => ['nedjelju', 'ponedjeljak', 'utorak', 'srijedu', 'četvrtak', 'petak', 'subotu'],
     'weekdays_standalone' => ['nedjelja', 'ponedjeljak', 'utorak', 'srijeda', 'četvrtak', 'petak', 'subota'],
     'weekdays_short' => ['ned.', 'pon.', 'uto.', 'sri.', 'čet.', 'pet.', 'sub.'],

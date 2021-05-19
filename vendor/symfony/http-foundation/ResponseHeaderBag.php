@@ -18,11 +18,11 @@ namespace Symfony\Component\HttpFoundation;
  */
 class ResponseHeaderBag extends HeaderBag
 {
-    public const COOKIES_FLAT = 'flat';
-    public const COOKIES_ARRAY = 'array';
+    const COOKIES_FLAT = 'flat';
+    const COOKIES_ARRAY = 'array';
 
-    public const DISPOSITION_ATTACHMENT = 'attachment';
-    public const DISPOSITION_INLINE = 'inline';
+    const DISPOSITION_ATTACHMENT = 'attachment';
+    const DISPOSITION_INLINE = 'inline';
 
     protected $computedCacheControl = [];
     protected $cookies = [];
@@ -252,13 +252,10 @@ class ResponseHeaderBag extends HeaderBag
      * @param string $domain
      * @param bool   $secure
      * @param bool   $httpOnly
-     * @param string $sameSite
      */
-    public function clearCookie($name, $path = '/', $domain = null, $secure = false, $httpOnly = true/*, $sameSite = null*/)
+    public function clearCookie($name, $path = '/', $domain = null, $secure = false, $httpOnly = true)
     {
-        $sameSite = \func_num_args() > 5 ? func_get_arg(5) : null;
-
-        $this->setCookie(new Cookie($name, null, 1, $path, $domain, $secure, $httpOnly, false, $sameSite));
+        $this->setCookie(new Cookie($name, null, 1, $path, $domain, $secure, $httpOnly, false, null));
     }
 
     /**

@@ -77,7 +77,7 @@ trait AsPivot
 
         $instance->timestamps = $instance->hasTimestampAttributes($attributes);
 
-        $instance->setRawAttributes($attributes, $exists);
+        $instance->setRawAttributes($attributes, true);
 
         return $instance;
     }
@@ -284,8 +284,6 @@ trait AsPivot
      */
     protected function newQueryForCollectionRestoration(array $ids)
     {
-        $ids = array_values($ids);
-
         if (! Str::contains($ids[0], ':')) {
             return parent::newQueryForRestoration($ids);
         }
@@ -302,18 +300,5 @@ trait AsPivot
         }
 
         return $query;
-    }
-
-    /**
-     * Unset all the loaded relations for the instance.
-     *
-     * @return $this
-     */
-    public function unsetRelations()
-    {
-        $this->pivotParent = null;
-        $this->relations = [];
-
-        return $this;
     }
 }

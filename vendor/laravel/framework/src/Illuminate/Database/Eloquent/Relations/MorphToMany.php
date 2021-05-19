@@ -116,26 +116,11 @@ class MorphToMany extends BelongsToMany
     }
 
     /**
-     * Get the pivot models that are currently attached.
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    protected function getCurrentlyAttachedPivots()
-    {
-        return parent::getCurrentlyAttachedPivots()->map(function ($record) {
-            return $record instanceof MorphPivot
-                            ? $record->setMorphType($this->morphType)
-                                     ->setMorphClass($this->morphClass)
-                            : $record;
-        });
-    }
-
-    /**
      * Create a new query builder for the pivot table.
      *
      * @return \Illuminate\Database\Query\Builder
      */
-    public function newPivotQuery()
+    protected function newPivotQuery()
     {
         return parent::newPivotQuery()->where($this->morphType, $this->morphClass);
     }

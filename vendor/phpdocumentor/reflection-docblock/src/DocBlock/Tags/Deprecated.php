@@ -44,11 +44,11 @@ final class Deprecated extends BaseTag implements Factory\StaticMethod
     )';
 
     /** @var string|null The version vector. */
-    private $version;
+    private $version = '';
 
     public function __construct(?string $version = null, ?Description $description = null)
     {
-        Assert::nullOrNotEmpty($version);
+        Assert::nullOrStringNotEmpty($version);
 
         $this->version     = $version;
         $this->description = $description;
@@ -75,7 +75,6 @@ final class Deprecated extends BaseTag implements Factory\StaticMethod
         }
 
         Assert::notNull($descriptionFactory);
-
         return new static(
             $matches[1],
             $descriptionFactory->create($matches[2] ?? '', $context)
@@ -95,14 +94,6 @@ final class Deprecated extends BaseTag implements Factory\StaticMethod
      */
     public function __toString() : string
     {
-        if ($this->description) {
-            $description = $this->description->render();
-        } else {
-            $description = '';
-        }
-
-        $version = (string) $this->version;
-
-        return $version . ($description !== '' ? ($version !== '' ? ' ' : '') . $description : '');
+        return ($this->version ?? '') . ($this->description ? ' ' . $this->description->render() : '');
     }
 }

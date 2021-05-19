@@ -311,7 +311,7 @@ class UrlGenerator implements UrlGeneratorContract
      * Create a signed route URL for a named route.
      *
      * @param  string  $name
-     * @param  mixed  $parameters
+     * @param  array  $parameters
      * @param  \DateTimeInterface|\DateInterval|int|null  $expiration
      * @param  bool  $absolute
      * @return string

@@ -76,13 +76,13 @@ final class RegEx
     {
         $index = null;
         $results = array();
-        preg_match($this->source, $str, $results, PREG_OFFSET_CAPTURE, $this->lastIndex);
+        preg_match_all($this->source, $str, $results, PREG_SET_ORDER | PREG_OFFSET_CAPTURE, $this->lastIndex);
 
         if ($results === null || count($results) === 0) {
             return null;
         }
 
-        foreach ($results as &$result) {
+        foreach ($results[0] as &$result) {
             if ($result[1] !== -1) {
                 // Only save the index if it hasn't been set yet
                 if ($index === null) {
@@ -95,8 +95,7 @@ final class RegEx
             }
         }
 
-        unset($result);
-
+        $results = $results[0];
         $this->lastIndex += mb_strlen($results[0]) + ($index - $this->lastIndex);
 
         $matches = new RegExMatch($results);

@@ -2,7 +2,7 @@
 
 namespace Illuminate\Routing;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Exception;
 use Illuminate\Contracts\Routing\ResponseFactory as ResponseFactoryContract;
 use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
 use Illuminate\Contracts\View\Factory as ViewFactoryContract;
@@ -144,7 +144,7 @@ class RoutingServiceProvider extends ServiceProvider
                 return (new DiactorosFactory)->createRequest($app->make('request'));
             }
 
-            throw new BindingResolutionException('Unable to resolve PSR request. Please install the symfony/psr-http-message-bridge and nyholm/psr7 packages.');
+            throw new Exception('Unable to resolve PSR request. Please install symfony/psr-http-message-bridge and nyholm/psr7.');
         });
     }
 
@@ -164,7 +164,7 @@ class RoutingServiceProvider extends ServiceProvider
                 return new ZendPsrResponse;
             }
 
-            throw new BindingResolutionException('Unable to resolve PSR response. Please install the nyholm/psr7 package.');
+            throw new Exception('Unable to resolve PSR response. Please install nyholm/psr7.');
         });
     }
 

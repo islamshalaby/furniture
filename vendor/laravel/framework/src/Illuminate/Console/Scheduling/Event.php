@@ -12,7 +12,6 @@ use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Date;
-use Illuminate\Support\Reflector;
 use Illuminate\Support\Traits\Macroable;
 use Psr\Http\Client\ClientExceptionInterface;
 use Symfony\Component\Process\Process;
@@ -261,20 +260,6 @@ class Event
         foreach ($this->afterCallbacks as $callback) {
             $container->call($callback);
         }
-    }
-
-    /**
-     * Call all of the "after" callbacks for the event.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @param  int  $exitCode
-     * @return void
-     */
-    public function callAfterCallbacksWithExitCode(Container $container, $exitCode)
-    {
-        $this->exitCode = (int) $exitCode;
-
-        $this->callAfterCallbacks($container);
     }
 
     /**
@@ -673,7 +658,7 @@ class Event
      */
     public function when($callback)
     {
-        $this->filters[] = Reflector::isCallable($callback) ? $callback : function () use ($callback) {
+        $this->filters[] = is_callable($callback) ? $callback : function () use ($callback) {
             return $callback;
         };
 
@@ -688,7 +673,7 @@ class Event
      */
     public function skip($callback)
     {
-        $this->rejects[] = Reflector::isCallable($callback) ? $callback : function () use ($callback) {
+        $this->rejects[] = is_callable($callback) ? $callback : function () use ($callback) {
             return $callback;
         };
 

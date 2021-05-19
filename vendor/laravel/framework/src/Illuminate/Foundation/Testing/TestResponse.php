@@ -5,7 +5,6 @@ namespace Illuminate\Foundation\Testing;
 use ArrayAccess;
 use Closure;
 use Illuminate\Contracts\View\View;
-use Illuminate\Cookie\CookieValuePrefix;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Testing\Assert as PHPUnit;
 use Illuminate\Foundation\Testing\Constraints\SeeInOrder;
@@ -300,8 +299,7 @@ class TestResponse implements ArrayAccess
         $cookieValue = $cookie->getValue();
 
         $actual = $encrypted
-            ? CookieValuePrefix::remove(app('encrypter')->decrypt($cookieValue, $unserialize))
-            : $cookieValue;
+            ? app('encrypter')->decrypt($cookieValue, $unserialize) : $cookieValue;
 
         PHPUnit::assertEquals(
             $value, $actual,
@@ -686,7 +684,7 @@ class TestResponse implements ArrayAccess
      */
     public function assertJsonCount(int $count, $key = null)
     {
-        if (! is_null($key)) {
+        if ($key) {
             PHPUnit::assertCount(
                 $count, data_get($this->json(), $key),
                 "Failed to assert that the response count matched the expected {$count}"
@@ -857,7 +855,7 @@ class TestResponse implements ArrayAccess
         $this->ensureResponseHasView();
 
         if (is_null($value)) {
-            PHPUnit::assertTrue(Arr::has($this->original->gatherData(), $key));
+            PHPUnit::assertArrayHasKey($key, $this->original->gatherData());
         } elseif ($value instanceof Closure) {
             PHPUnit::assertTrue($value(Arr::get($this->original->gatherData(), $key)));
         } elseif ($value instanceof Model) {
@@ -911,7 +909,7 @@ class TestResponse implements ArrayAccess
     {
         $this->ensureResponseHasView();
 
-        PHPUnit::assertFalse(Arr::has($this->original->gatherData(), $key));
+        PHPUnit::assertArrayNotHasKey($key, $this->original->gatherData());
 
         return $this;
     }
@@ -999,7 +997,7 @@ class TestResponse implements ArrayAccess
 
         if (is_null($value)) {
             PHPUnit::assertTrue(
-                $this->session()->hasOldInput($key),
+                $this->session()->getOldInput($key),
                 "Session is missing expected key [{$key}]."
             );
         } elseif ($value instanceof Closure) {
@@ -1031,7 +1029,7 @@ class TestResponse implements ArrayAccess
             if (is_int($key)) {
                 PHPUnit::assertTrue($errors->has($value), "Session missing error: $value");
             } else {
-                PHPUnit::assertContains(is_bool($value) ? (string) $value : $value, $errors->get($key, $format));
+                PHPUnit::assertContains($value, $errors->get($key, $format));
             }
         }
 
@@ -1173,17 +1171,15 @@ class TestResponse implements ArrayAccess
     /**
      * Dump the session from the response.
      *
-     * @param  string|array  $keys
+     * @param  array  $keys
      * @return $this
      */
-    public function dumpSession($keys = [])
+    public function dumpSession($keys = null)
     {
-        $keys = (array) $keys;
-
-        if (empty($keys)) {
-            dump($this->session()->all());
-        } else {
+        if (is_array($keys)) {
             dump($this->session()->only($keys));
+        } else {
+            dump($this->session()->all());
         }
 
         return $this;

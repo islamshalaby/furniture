@@ -214,13 +214,6 @@ class Validator implements ValidatorContract
     protected $numericRules = ['Numeric', 'Integer'];
 
     /**
-     * The current placeholder for dots in rule keys.
-     *
-     * @var string
-     */
-    protected $dotPlaceholder;
-
-    /**
      * Create a new Validator instance.
      *
      * @param  \Illuminate\Contracts\Translation\Translator  $translator
@@ -233,8 +226,6 @@ class Validator implements ValidatorContract
     public function __construct(Translator $translator, array $data, array $rules,
                                 array $messages = [], array $customAttributes = [])
     {
-        $this->dotPlaceholder = Str::random();
-
         $this->initialRules = $rules;
         $this->translator = $translator;
         $this->customMessages = $messages;
@@ -259,11 +250,7 @@ class Validator implements ValidatorContract
                 $value = $this->parseData($value);
             }
 
-            $key = str_replace(
-                ['.', '*'],
-                [$this->dotPlaceholder, '__asterisk__'],
-                $key
-            );
+            $key = str_replace(['.', '*'], ['->', '__asterisk__'], $key);
 
             $newData[$key] = $value;
         }
@@ -280,7 +267,7 @@ class Validator implements ValidatorContract
     public function after($callback)
     {
         $this->after[] = function () use ($callback) {
-            return $callback($this);
+            return call_user_func_array($callback, [$this]);
         };
 
         return $this;
@@ -301,6 +288,8 @@ class Validator implements ValidatorContract
         // rule. Any error messages will be added to the containers with each of
         // the other error messages, returning true if we don't have messages.
         foreach ($this->rules as $attribute => $rules) {
+            $attribute = str_replace('\.', '->', $attribute);
+
             if ($this->shouldBeExcluded($attribute)) {
                 $this->removeAttribute($attribute);
 
@@ -369,8 +358,7 @@ class Validator implements ValidatorContract
      */
     protected function removeAttribute($attribute)
     {
-        Arr::forget($this->data, $attribute);
-        Arr::forget($this->rules, $attribute);
+        unset($this->data[$attribute], $this->rules[$attribute]);
     }
 
     /**
@@ -920,10 +908,6 @@ class Validator implements ValidatorContract
      */
     public function setRules(array $rules)
     {
-        $rules = collect($rules)->mapWithKeys(function ($value, $key) {
-            return [str_replace('\.', $this->dotPlaceholder, $key) => $value];
-        })->toArray();
-
         $this->initialRules = $rules;
 
         $this->rules = [];
@@ -1268,7 +1252,7 @@ class Validator implements ValidatorContract
         $callback = $this->extensions[$rule];
 
         if (is_callable($callback)) {
-            return $callback(...array_values($parameters));
+            return call_user_func_array($callback, $parameters);
         } elseif (is_string($callback)) {
             return $this->callClassBasedExtension($callback, $parameters);
         }
@@ -1285,7 +1269,7 @@ class Validator implements ValidatorContract
     {
         [$class, $method] = Str::parseCallback($callback, 'validate');
 
-        return $this->container->make($class)->{$method}(...array_values($parameters));
+        return call_user_func_array([$this->container->make($class), $method], $parameters);
     }
 
     /**

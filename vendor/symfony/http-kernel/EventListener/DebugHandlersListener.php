@@ -15,7 +15,6 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\ConsoleEvents;
 use Symfony\Component\Console\Event\ConsoleEvent;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
-use Symfony\Component\Debug\ErrorHandler as LegacyErrorHandler;
 use Symfony\Component\Debug\Exception\FatalThrowableError;
 use Symfony\Component\ErrorHandler\ErrorHandler;
 use Symfony\Component\EventDispatcher\Event;
@@ -33,7 +32,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class DebugHandlersListener implements EventSubscriberInterface
 {
-    private $earlyHandler;
     private $exceptionHandler;
     private $logger;
     private $levels;
@@ -52,16 +50,12 @@ class DebugHandlersListener implements EventSubscriberInterface
      * @param string|FileLinkFormatter|null $fileLinkFormat   The format for links to source files
      * @param bool                          $scope            Enables/disables scoping mode
      */
-    public function __construct(callable $exceptionHandler = null, LoggerInterface $logger = null, $levels = \E_ALL, ?int $throwAt = \E_ALL, bool $scream = true, $fileLinkFormat = null, bool $scope = true)
+    public function __construct(callable $exceptionHandler = null, LoggerInterface $logger = null, $levels = E_ALL, ?int $throwAt = E_ALL, bool $scream = true, $fileLinkFormat = null, bool $scope = true)
     {
-        $handler = set_exception_handler('var_dump');
-        $this->earlyHandler = \is_array($handler) ? $handler[0] : null;
-        restore_exception_handler();
-
         $this->exceptionHandler = $exceptionHandler;
         $this->logger = $logger;
-        $this->levels = null === $levels ? \E_ALL : $levels;
-        $this->throwAt = \is_int($throwAt) ? $throwAt : (null === $throwAt ? null : ($throwAt ? \E_ALL : null));
+        $this->levels = null === $levels ? E_ALL : $levels;
+        $this->throwAt = \is_int($throwAt) ? $throwAt : (null === $throwAt ? null : ($throwAt ? E_ALL : null));
         $this->scream = $scream;
         $this->fileLinkFormat = $fileLinkFormat;
         $this->scope = $scope;
@@ -72,9 +66,6 @@ class DebugHandlersListener implements EventSubscriberInterface
      */
     public function configure(Event $event = null)
     {
-        if ($event instanceof ConsoleEvent && !\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true)) {
-            return;
-        }
         if (!$event instanceof KernelEvent ? !$this->firstCall : !$event->isMasterRequest()) {
             return;
         }
@@ -84,12 +75,8 @@ class DebugHandlersListener implements EventSubscriberInterface
         $handler = \is_array($handler) ? $handler[0] : null;
         restore_exception_handler();
 
-        if (!$handler instanceof ErrorHandler && !$handler instanceof LegacyErrorHandler) {
-            $handler = $this->earlyHandler;
-        }
-
         if ($this->logger || null !== $this->throwAt) {
-            if ($handler instanceof ErrorHandler || $handler instanceof LegacyErrorHandler) {
+            if ($handler instanceof ErrorHandler) {
                 if ($this->logger) {
                     $handler->setDefaultLogger($this->logger, $this->levels);
                     if (\is_array($this->levels)) {
@@ -104,7 +91,7 @@ class DebugHandlersListener implements EventSubscriberInterface
                         $handler->screamAt($levels);
                     }
                     if ($this->scope) {
-                        $handler->scopeAt($levels & ~\E_USER_DEPRECATED & ~\E_DEPRECATED);
+                        $handler->scopeAt($levels & ~E_USER_DEPRECATED & ~E_DEPRECATED);
                     } else {
                         $handler->scopeAt(0, true);
                     }
@@ -148,7 +135,7 @@ class DebugHandlersListener implements EventSubscriberInterface
             }
         }
         if ($this->exceptionHandler) {
-            if ($handler instanceof ErrorHandler || $handler instanceof LegacyErrorHandler) {
+            if ($handler instanceof ErrorHandler) {
                 $handler->setExceptionHandler($this->exceptionHandler);
             }
             $this->exceptionHandler = null;
@@ -159,7 +146,7 @@ class DebugHandlersListener implements EventSubscriberInterface
     {
         $events = [KernelEvents::REQUEST => ['configure', 2048]];
 
-        if (\defined('Symfony\Component\Console\ConsoleEvents::COMMAND')) {
+        if ('cli' === \PHP_SAPI && \defined('Symfony\Component\Console\ConsoleEvents::COMMAND')) {
             $events[ConsoleEvents::COMMAND] = ['configure', 2048];
         }
 

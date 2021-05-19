@@ -41,7 +41,7 @@ class DumpServer
     public function start(): void
     {
         if (!$this->socket = stream_socket_server($this->host, $errno, $errstr)) {
-            throw new \RuntimeException(sprintf('Server start failed on "%s": ', $this->host).$errstr.' '.$errno);
+            throw new \RuntimeException(sprintf('Server start failed on "%s": %s %s.', $this->host, $errstr, $errno));
         }
     }
 
@@ -71,7 +71,7 @@ class DumpServer
                 continue;
             }
 
-            [$data, $context] = $payload;
+            list($data, $context) = $payload;
 
             $callback($data, $context, $clientId);
         }
