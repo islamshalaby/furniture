@@ -8,16 +8,86 @@
     <div id="tableSimple" class="col-lg-12 col-12 layout-spacing">
         <div class="statbox widget box box-shadow">
             <div class="widget-header">
-            <div class="row">
-                <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                    <h4>{{ __('messages.main_ads_second') }}</h4>
+                <div class="row">
+                    @if (count($data['sliders']) > 0)
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <h4>{{ __('messages.show_slider') }}</h4>
+                    </div>
+                    @foreach ($data['sliders'] as $banner)
+                    <div class="col-md-3">
+                        <div class="form-group mb-4">
+                            <img style="height: 100px;"
+                                 src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{$banner->ad->image}}">
+                        </div>
+                        
+                    </div>
+                    @endforeach
+                    @endif
+                    
+                    @if(Auth::user()->add_data && Auth::user()->update_data)
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <a class="btn btn-primary" data-toggle="modal"
+                        data-target="#slider_image_Modal">{{ __('messages.edit_slider_ads') }}</a>
+                    </div>
+                    @endif
+                </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <h4>{{ __('messages.main_ads_second') }}</h4>
+                    </div>
+                </div>
+                @if(Auth::user()->add_data)
+                    <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                        <a class="btn btn-primary" href="/admin-panel/ads/add">{{ __('messages.add') }}</a>
+                    </div>
+                @endif
+            
+            
+            
+            <div id="slider_image_Modal" class="modal animated zoomInUp custo-zoomInUp" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ __('messages.edit_slider_ads') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                     stroke-linecap="round" stroke-linejoin="round" class="feather feather-x">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <form action="{{route('ads.update.slider')}}" method="post" enctype="multipart/form-data">
+                            @csrf
+                            <div class="modal-body">
+                                <div class="container">
+                                    <div id="ads_check" class="row" >
+                                        
+                                        @if (count($data['ads']) > 0)
+                                        @foreach ($data['ads'] as $ad)
+                                        <div class="col-md-6" >
+                                            <div >
+                                                <label class="new-control new-checkbox new-checkbox-text checkbox-primary">
+                                                    <input name="ad_id[]" value="{{ $ad->id }}" {{ in_array($ad->id, $data['slider']) ? 'checked' : '' }} type="checkbox" class="new-control-input">
+                                                    <span class="new-control-indicator"></span><span class="new-chk-content"><img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1601416550/{{ $ad->image }}" /></span>
+                                                </label>
+                                            </div>     
+                                        </div>
+                                        @endforeach
+                                        @endif
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <input type="submit" value="{{ __('messages.edit') }}" class="btn btn-primary">
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
-            @if(Auth::user()->add_data)
-                <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                    <a class="btn btn-primary" href="/admin-panel/ads/add">{{ __('messages.add') }}</a>
-                </div>
-            @endif
         </div>
         <div class="widget-content widget-content-area">
 

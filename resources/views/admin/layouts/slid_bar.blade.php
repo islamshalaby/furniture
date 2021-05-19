@@ -113,7 +113,7 @@
                 </li>
                 @endif
 
-                @if(in_array(21 , Auth::user()->custom['admin_permission']))
+                {{-- @if(in_array(21 , Auth::user()->custom['admin_permission']))
                 <li class="menu home_sections">
                     <a href="#home_sections" data-active="true" data-toggle="collapse" aria-expanded="true" class="dropdown-toggle first-link">
                         <div class="">
@@ -135,7 +135,7 @@
                         </li>
                     </ul>
                 </li>
-                @endif
+                @endif --}}
 
                 @if(in_array(4 , Auth::user()->custom['admin_permission']))
                     <li class="menu categories">

@@ -84,6 +84,7 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
         Route::post('edit/{id}' , 'Ads\AdController@EditPost');
         Route::get('details/{id}' , 'Ads\AdController@details');
         Route::get('delete/{id}' , 'Ads\AdController@delete');
+        Route::post('update-slider' , 'Ads\AdController@updateSlider')->name('ads.update.slider');
         Route::get('fetchproducts/{userId}' , 'Ads\AdController@fetch_products')->name("products.fetch");
     });
     Route::resource('payments' , 'PaymentsController');

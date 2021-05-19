@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Ad;
 use App\User;
 use App\Product;
+use App\Slider;
 
 class AdController extends AdminController{
 
@@ -48,8 +49,29 @@ class AdController extends AdminController{
         $data['out_link'] = Ad::where('type','link')->orderBy('id' , 'desc')->get();
         $data['products'] = Ad::where('type','id')->where('content_type', 1)->orderBy('id' , 'desc')->get();
         $data['offers'] = Ad::where('type','offer')->where('content_type', 2)->orderBy('id' , 'desc')->get();
+        $data['ads'] = Ad::orderBy('id', 'desc')->get();
+        $data['slider'] = Slider::pluck('ad_id')->toArray();
+        $data['sliders'] = Slider::orderBy('id', 'desc')->get();
         
         return view('admin.ads.ads' , ['data' => $data]);
+    }
+
+    public function updateSlider(Request $request) {
+        $post = $this->validate(\request(),
+            [
+                'ad_id' => 'required',
+            ]);
+            
+        if (isset($post['ad_id']) && count($post['ad_id']) > 0) {
+            DB::table('sliders')->delete();
+            foreach($post['ad_id'] as $ad) {
+                $banner['ad_id'] = $ad;
+                // dd($banner);
+                Slider::create($banner);
+            }
+        }
+        session()->flash('success', trans('messages.updated_s'));
+        return redirect()->back();
     }
 
     // get edit page
