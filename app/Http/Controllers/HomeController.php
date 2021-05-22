@@ -25,7 +25,7 @@ class HomeController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['balance_packages', 'gethome', 'getHomeAds', 'check_ad', 'main_ad', 'getSlider', 'getHomeCompanies', 'getHomeCategories']]);
+        $this->middleware('auth:api', ['except' => ['balance_packages', 'gethome', 'getHomeAds', 'check_ad', 'main_ad', 'getSlider', 'getHomeCompanies', 'getHomeCategories', 'getOffersBanners']]);
     }
 
     public function gethome(Request $request)
@@ -121,6 +121,13 @@ class HomeController extends Controller
                 array_push($data, $slider[$i]->ad);
             }
         }
+
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
+    public function getOffersBanners(Request $request) {
+        $data = Ad::select('id' ,'image' , 'type' , 'content')->inRandomOrder()->get();
 
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
         return response()->json($response, 200);
@@ -295,6 +302,7 @@ class HomeController extends Controller
         $data = [];
         if (count($categories) > 0) {
             for($i = 0; $i < count($categories); $i ++) {
+                $categories[$i]['type'] = "categories";
                 $categories[$i]['sub_categories'] = $categories[$i]->subCategories($request->lang)->get()->makeHidden('subCategoriesTwo');
                 if (count($categories[$i]['sub_categories']) > 0) {
                     for ($n = 0; $n < count($categories[$i]['sub_categories']); $n ++) {
@@ -305,10 +313,21 @@ class HomeController extends Controller
                     }
                 }
                 array_push($data, $categories[$i]);
-                // if ($i % 1 == 0) {
-                //     $offers = Ad::select('id' ,'image' , 'type' , 'content')->get();
-                //     array_push($data, $offers);
-                // }
+                if ($i % 1 == 0) {
+                    $pushed = (object)[
+                        "type" => "offers",
+                        "title" => "Our Offers"
+                    ];
+                    if ($request->lang == 'ar') {
+                        $pushed = (object)[
+                            "type" => "offers",
+                            "title" => "عروضنا"
+                        ];
+                    }
+                    
+                    $pushed->offers = Ad::select('id' ,'image' , 'type' , 'content')->inRandomOrder()->get();
+                    array_push($data, $pushed);
+                }
             }
         }
         

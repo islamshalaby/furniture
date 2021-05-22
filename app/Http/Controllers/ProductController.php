@@ -20,6 +20,7 @@ use App\User;
 use App\Plan;
 use App\City;
 use App\Area;
+use App\Ad;
 
 class ProductController extends Controller
 {
@@ -332,7 +333,7 @@ class ProductController extends Controller
     // islam code
     // get offers page
     public function getOffersPage(Request $request) {
-        
+        $allData['banner'] = Ad::select('id' ,'image' , 'type' , 'content')->where('type', '!=', 'offer')->inRandomOrder()->first();
         $products = Product::where('offer', 1)->where('status', 1)
         ->where('publish', 'Y')
         ->where('deleted', 0)
@@ -355,8 +356,8 @@ class ProductController extends Controller
                 $products[$i]['favorite'] = false;
             }
         }
-
-        $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
+        $allData['products'] = $products;
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $allData, $request->lang);
         return response()->json($response, 200);
     }
 

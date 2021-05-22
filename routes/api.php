@@ -81,7 +81,10 @@ use Illuminate\Http\Request;
     Route::get('/offers/{lang}/{v}' , 'ProductController@getoffers')->middleware('checkguest');
 
     // offer page
-    Route::get('/all-offers/{lang}/{v}' , 'ProductController@getOffersPage')->middleware('checkguest');
+    Route::get('/all-offers/{lang}/{v}' , 'ProductController@getOffersPage');
+
+    // offer page
+    Route::get('/offers-banners/{lang}/{v}' , 'HomeController@getOffersBanners');
 
     // feature offers
     Route::get('/feature-offers/{lang}/{v}' , 'ProductController@getFeatureOffers')->middleware('checkguest');
