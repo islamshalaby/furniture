@@ -177,7 +177,7 @@
         "address_en" => "Address in English",
         "address_ar" => "Address in Arabic",
         "address" => "Address",
-        "facebook" => "Facebook Link",
+        "facebook" => "Instagram Link",
         "youtube" => "Youtube Link",
         "twitter" => "Twitter Link",
         "google_plus" => "Google Plus Link",

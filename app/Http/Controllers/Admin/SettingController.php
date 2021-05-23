@@ -36,7 +36,7 @@ class SettingController extends AdminController{
         $setting->address_en = $request->address_en;
         $setting->address_ar = $request->address_ar;
         $setting->app_name_ar = $request->app_name_ar;
-        $setting->facebook = $request->facebook;
+        $setting->instegram = $request->instegram;
         $setting->twitter = $request->twitter;
         $setting->snap_chat = $request->snap_chat;
         $setting->free_balance = $request->free_balance;

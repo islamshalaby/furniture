@@ -74,9 +74,9 @@
                                 <div class="card-body">
 
                                     <div class="form-group mb-4">
-                                        <label for="facebook">{{ __('messages.facebook') }}</label>
-                                        <input type="text" name="facebook" class="form-control" id="facebook"
-                                               placeholder="{{ __('messages.facebook') }}" value="{{$data['setting']['facebook']}}">
+                                        <label for="instegram">{{ __('messages.facebook') }}</label>
+                                        <input type="text" name="instegram" class="form-control" id="instegram"
+                                               placeholder="{{ __('messages.facebook') }}" value="{{$data['setting']['instegram']}}">
                                     </div>
                                     <div class="form-group mb-4">
                                         <label for="twitter">{{ __('messages.twitter') }}</label>
