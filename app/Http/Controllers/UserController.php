@@ -66,11 +66,26 @@ class UserController extends Controller
             $response = APIHelpers::createApiResponse(true , 409 , 'البريد الإلكتروني موجود من قبل', '' , null, $request->lang );
             return response()->json($response , 409);
         }
+// dd($currentuser->id);
+        $userImage = $currentuser->image;
+        if ($request->image) {
+            $image = str_replace('data:image/png;base64,', '', $request->image);
+            $image = str_replace(' ', '+', $image);
+            $profileImage = $request->image;
+            Cloudder::upload($profileImage, null);
+            $front_imageereturned = Cloudder::getResult();
+            $front_image_id = $front_imageereturned['public_id'];
+            $front_image_format = $front_imageereturned['format'];    
+            $front_image_new_name = $front_image_id.'.'.$front_image_format;
+            $userImage = $front_image_new_name;
+        }
 
         User::where('id' , $currentuser->id)->update([
             'name' => $request->name ,
             'phone' => $request->phone ,
-            'email' => $request->email  ]);
+            'email' => $request->email,
+            'image' => $userImage  
+            ]);
 
         $newuser = User::find($currentuser->id);
         $response = APIHelpers::createApiResponse(false , 200 ,  '', '' , $newuser, $request->lang );
@@ -454,7 +469,7 @@ class UserController extends Controller
 //nasser code
     public function my_account(Request $request){
         $user = auth()->user();
-        $user_data = User::where('id',$user->id)->select('name','email','image','phone','free_balance','payed_balance')->first();
+        $user_data = User::where('id',$user->id)->select('name','email','image','phone','free_balance','payed_balance', 'created_at')->first();
         if($user_data->image == null){
             $settings = Setting::where('id',1)->first();
 

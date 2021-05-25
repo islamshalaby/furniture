@@ -1036,7 +1036,7 @@ class ProductController extends Controller
         $ads['ended_ads'] = Product::where('status', 2)
             ->where('deleted', 0)
             ->where('user_id', auth()->user()->id)
-            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')
+            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at', 'plan_id')
             ->orderBy('created_at', 'desc')
             ->with('City_api')->simplePaginate(12);
         $ended_ads = $ads['ended_ads']->makeHidden(['city_id', 'created_at']);
@@ -1045,7 +1045,7 @@ class ProductController extends Controller
             ->where('publish', 'Y')
             ->where('deleted', 0)
             ->where('user_id', auth()->user()->id)
-            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')
+            ->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at', 'plan_id')
             ->orderBy('created_at', 'desc')
             ->with('City_api')->simplePaginate(12);
         $current_ads = $ads['current_ads']->makeHidden(['city_id', 'created_at']);
