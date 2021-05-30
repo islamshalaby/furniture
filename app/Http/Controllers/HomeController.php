@@ -304,6 +304,7 @@ class HomeController extends Controller
             for($i = 0; $i < count($categories); $i ++) {
                 $categories[$i]['type'] = "categories";
                 $categories[$i]['sub_categories'] = $categories[$i]->subCategories($request->lang)->get()->makeHidden('subCategoriesTwo');
+                $categories[$i]['next_level'] = false;
                 if (count($categories[$i]['sub_categories']) > 0) {
                     for ($n = 0; $n < count($categories[$i]['sub_categories']); $n ++) {
                         $categories[$i]['sub_categories'][$n]['type'] = 1;
@@ -311,6 +312,7 @@ class HomeController extends Controller
                             $categories[$i]['sub_categories'][$n]['type'] = 2;
                         }
                     }
+                    $categories[$i]['next_level'] = true;
                 }
                 array_push($data, $categories[$i]);
                 if ($i % 1 == 0) {
