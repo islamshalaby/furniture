@@ -20,6 +20,9 @@ class Product extends Model
     public function Product_user() {
         return $this->belongsTo('App\User', 'user_id')->select('id','image','name','email', 'phone');
     }
+    public function sub_category() {
+        return $this->belongsTo('App\SubCategory', 'sub_category_id');
+    }
     public function Plan() {
         return $this->belongsTo('App\Plan', 'plan_id');
     }

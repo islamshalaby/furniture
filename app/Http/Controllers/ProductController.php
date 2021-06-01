@@ -21,6 +21,8 @@ use App\Plan;
 use App\City;
 use App\Area;
 use App\Ad;
+use App\Category;
+use App\SubCategory;
 
 class ProductController extends Controller
 {
@@ -1241,8 +1243,14 @@ class ProductController extends Controller
             ->with('City_api')
             ->with('Area_api')
             ->select('id', 'category_id', 'sub_category_id', 'title', 'price', 'description', 'main_image','city_id','area_id','share_location','latitude','longitude', 'address')
-            ->get();
-        $data['ad_images'] = ProductImage::where('product_id', $id)->select('id', 'image', 'product_id')->get();
+            ->first();
+            
+        $category = Category::where('id', $data['ad']['category_id'])->select('title_' . $request->lang . ' as title')->first();
+        $sub_category = SubCategory::where('id', $data['ad']['sub_category_id'])->select('title_' . $request->lang . ' as title')->first();
+        $data['ad']['category_name'] = $category->title;
+        $data['ad']['sub_category_name'] = $sub_category->title;
+        
+        $data['ad']['ad_images'] = ProductImage::where('product_id', $id)->select('id', 'image', 'product_id')->get();
         $response = APIHelpers::createApiResponse(false, 200, 'data shown', 'تم أظهار البيانات', $data, $request->lang);
         return response()->json($response, 200);
     }
