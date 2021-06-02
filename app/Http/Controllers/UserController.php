@@ -29,7 +29,7 @@ class UserController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api' , ['except' => ['pay_sucess','pay_error','excute_pay','my_account','my_balance','resetforgettenpassword' , 'checkphoneexistance' , 'getownerprofile']]);
+        $this->middleware('auth:api' , ['except' => ['pay_sucess','pay_error','excute_pay','my_account','my_balance','resetforgettenpassword' , 'checkphoneexistance' , 'getownerprofile', 'companyDetails']]);
     }
 
     public function getprofile(Request $request){
