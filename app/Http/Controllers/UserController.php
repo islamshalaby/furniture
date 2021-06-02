@@ -629,15 +629,16 @@ class UserController extends Controller
         
         $data['products'] = Product::where('user_id', $data->user->id)->where('publish', 'Y')
         ->where('deleted', 0)
-        ->where('status', 1)->select('id', 'title', 'price', 'views', 'main_image as image', 'created_at')->orderBy('created_at', 'DESC')->simplePaginate(12);
+        ->where('status', 1)->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->orderBy('created_at', 'DESC')->with('City_api')->simplePaginate(12);
         
         
         if (count($data['products']) > 0) {
             for ($i = 0; $i < count($data['products']); $i ++) {
+                $data['products'][$i]['time'] = APIHelpers::get_time_day($data['products'][$i]['created_at'], $request->lang);
                 $favorite = Favorite::where('user_id', $data->user->id)->where('product_id', $data['products'][$i]['id'])->first();
-                $products[$i]['favorite'] = false;
+                $data['products'][$i]['favorite'] = false;
                 if ($favorite) {
-                    $products[$i]['favorite'] = true;
+                    $data['products'][$i]['favorite'] = true;
                 }
             }
         }
