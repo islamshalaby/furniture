@@ -17,7 +17,7 @@
                     <div class="col-md-3">
                         <div class="form-group mb-4">
                             <img style="height: 100px;"
-                                 src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{$banner->ad->image}}">
+                                 src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{$banner->ad ? $banner->ad->image : ''}}">
                         </div>
                         
                     </div>

@@ -66,7 +66,6 @@ class AdController extends AdminController{
             DB::table('sliders')->delete();
             foreach($post['ad_id'] as $ad) {
                 $banner['ad_id'] = $ad;
-                // dd($banner);
                 Slider::create($banner);
             }
         }
