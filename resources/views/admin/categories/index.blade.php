@@ -68,9 +68,18 @@
                                 @if(Auth::user()->update_data)
                                     <td class="text-center blue-color" ><a href="/admin-panel/categories/edit/{{ $category->id }}" ><i class="far fa-edit"></i></a></td>
                                 @endif
+                                
                                 @if(Auth::user()->delete_data)
-                                    <td class="text-center blue-color" ><a onclick="return confirm('Are you sure you want to delete this item?');" href="/admin-panel/categories/delete/{{ $category->id }}" ><i class="far fa-trash-alt"></i></a></td>
+                                <td class="text-center blue-color" >
+                                    @if (count($category->plans) > 0 || count($category->products) > 0)
+                                    {{ __('messages.categories_has_plans') }}
+                                    @else
+                                    <a onclick="return confirm('Are you sure you want to delete this item?');" href="/admin-panel/categories/delete/{{ $category->id }}" ><i class="far fa-trash-alt"></i></a>
+                                    @endif
+                                </td>
+                            
                                 @endif
+                                
                                 <?php $i++; ?>
                             </tr>
                         @endforeach

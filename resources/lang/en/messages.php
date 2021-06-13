@@ -330,6 +330,7 @@
         "prefere_to" => "For better use experience, it is recommended to use The latest version of Google chroome and at least windows 8",
         "home_sliders" => "Home Page Slider",
         "show_slider" => "Show Slider",
-        "edit_slider_ads" => "Edit Slider Ads"
+        "edit_slider_ads" => "Edit Slider Ads",
+        "categories_has_plans" => "Categories has Plans or Ads"
     ];
 ?>
