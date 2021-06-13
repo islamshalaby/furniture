@@ -331,6 +331,7 @@
         "home_sliders" => "Home Page Slider",
         "show_slider" => "Show Slider",
         "edit_slider_ads" => "Edit Slider Ads",
-        "categories_has_plans" => "Categories has Plans or Ads"
+        "categories_has_plans" => "Categories has Plans or Ads",
+        "sub_cats_has_ads" => "Sub Category has Ads"
     ];
 ?>

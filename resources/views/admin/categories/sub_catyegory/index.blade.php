@@ -54,7 +54,13 @@
                                     <td class="text-center blue-color" ><a href="{{ route( 'sub_cat.edit', $row->id ) }}" ><i class="far fa-edit"></i></a></td>
                                 @endif
                                 @if(Auth::user()->delete_data)
-                                    <td class="text-center blue-color" ><a onclick="return confirm('{{ __('messages.are_you_sure') }}');" href="{{ route('sub_cat.delete', $row->id) }}" ><i class="far fa-trash-alt"></i></a></td>
+                                    <td class="text-center blue-color" >
+                                        @if (count($row->products) > 0)
+                                            {{ __('messages.sub_cats_has_ads') }}
+                                        @else
+                                        <a onclick="return confirm('{{ __('messages.are_you_sure') }}');" href="{{ route('sub_cat.delete', $row->id) }}" ><i class="far fa-trash-alt"></i></a>
+                                        @endif
+                                    </td>
                                 @endif
                                 <?php $i++; ?>
                             </tr>

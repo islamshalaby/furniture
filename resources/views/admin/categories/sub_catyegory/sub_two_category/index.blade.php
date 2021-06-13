@@ -55,9 +55,13 @@
                                 @endif
                                 @if(Auth::user()->delete_data)
                                     <td class="text-center blue-color" >
+                                        @if (count($row->products) > 0)
+                                            {{ __('messages.sub_cats_has_ads') }}
+                                        @else
                                         <a onclick="return confirm('{{ __('messages.are_you_sure') }}');" href="{{ route('sub_two_cat.delete', $row->id) }}" >
                                             <i class="far fa-trash-alt"></i>
                                         </a>
+                                        @endif
                                     </td>
                                 @endif
                                 <?php $i++; ?>
