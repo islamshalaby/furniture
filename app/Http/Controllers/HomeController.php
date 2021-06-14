@@ -317,11 +317,13 @@ class HomeController extends Controller
                 array_push($data, $categories[$i]);
                 if ($i % 1 == 0) {
                     $pushed = (object)[
+                        "id" => $i + 1,
                         "type" => "offers",
                         "title" => "Our Offers"
                     ];
                     if ($request->lang == 'ar') {
                         $pushed = (object)[
+                            "id" => $i + 1,
                             "type" => "offers",
                             "title" => "عروضنا"
                         ];
