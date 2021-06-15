@@ -106,6 +106,7 @@ class PlanController extends Controller
     //Nasser Code
     public function select_all_plans(Request $request,$cat_id) {
         $lang = $request->lang;
+        $plan = Plan::where('cat_id' , $cat_id)->first();
             $data['plans'] = Plan::with('Details')
                 ->where('deleted','0')
                 ->where('status' , 'show')

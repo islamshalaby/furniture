@@ -80,7 +80,7 @@ class FavoriteController extends Controller
             $response = APIHelpers::createApiResponse(true , 406 ,  'تم حظر حسابك', 'تم حظر حسابك' , null, $request->lang );
             return response()->json($response , 406);
         }else {
-            $ads = Favorite::orderBy('id','desc')
+            $ads = Favorite::where('user_id', $user->id)->orderBy('id','desc')
                             ->pluck('product_id')->toArray();
 
             $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
@@ -101,7 +101,7 @@ class FavoriteController extends Controller
             if(count($products) > 0) {
                 $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
             }else{
-                $response = APIHelpers::createApiResponse(false, 200, 'no item favorite to show', 'لا يوجد عناصر للعرض', null, $request->lang);
+                $response = APIHelpers::createApiResponse(false, 200, 'no item favorite to show', 'لا يوجد عناصر للعرض', (object)["data" => []], $request->lang);
             }
             return response()->json($response, 200);
         }
