@@ -71,7 +71,7 @@ class CategoryController extends Controller
     // get products
     public function getProductsSubCategory(Request $request) {
         Session::put('local_api',$request->lang);
-        $products = Product::where('status', 1)->where('publish', 'Y')->where('deleted', 0)->where('category_id', $request->category_id);
+        $products = Product::where('status', 1)->where('publish', 'Y')->where('deleted', 0)->where('category_id', $request->category_id)->where('sub_category_id', $request->sub_category_id);
         
         if ($request->area_id && $request->area_id != 0) {
             $allData['area_id'] = $request->area_id;
