@@ -139,6 +139,8 @@ use Illuminate\Http\Request;
 
     Route::get('/ad/sub_categories/level2/{sub_category_id}/{lang}/{v}' , 'CategoryController@show_third_cat');
 
+    Route::get('/ad/sub_categories_ads/level2/{sub_category_id}/{lang}/{v}' , 'CategoryController@show_two_catads');
+
     Route::get('/ad/sub_categories/level3/{sub_category_id}/{lang}/{v}' , 'CategoryController@show_four_cat');
     Route::get('/ad/sub_categories/level4/{sub_category_id}/{lang}/{v}' , 'CategoryController@show_five_cat');
     Route::get('/ad/sub_categories/level5/{sub_category_id}/{lang}/{v}' , 'CategoryController@show_six_cat');

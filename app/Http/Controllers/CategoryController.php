@@ -27,7 +27,7 @@ class CategoryController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['show_six_cat', 'getCategoryOptions', 'show_five_cat', 'show_four_cat', 'show_third_cat', 'show_second_cat', 'show_first_cat', 'getcategories', 'getAdSubCategories', 'get_sub_categories_level2', 'get_sub_categories_level3', 'get_sub_categories_level4', 'get_sub_categories_level5', 'getproducts', 'getSubCategories', 'getProductsSubCategory']]);
+        $this->middleware('auth:api', ['except' => ['show_six_cat', 'getCategoryOptions', 'show_five_cat', 'show_four_cat', 'show_third_cat', 'show_second_cat', 'show_first_cat', 'getcategories', 'getAdSubCategories', 'get_sub_categories_level2', 'get_sub_categories_level3', 'get_sub_categories_level4', 'get_sub_categories_level5', 'getproducts', 'getSubCategories', 'getProductsSubCategory', 'show_two_catads']]);
     }
 
     public function getcategories(Request $request)
@@ -789,15 +789,7 @@ class CategoryController extends Controller
         } else {
             $data['categories'] = SubTwoCategory::where('sub_category_id', $sub_cat_id)->where('deleted', 0)->select('id', 'title_ar as title', 'image')->get()->toArray();
         }
-        $title = 'All';
-        if ($request->lang == 'ar') {
-            $title = 'الكل';
-        }
-        $all = new \StdClass;
-        $all->id = 0;
-        $all->title = $title;
-        $all->image = 'square_1_vdfx9q.png';
-        $all->next_level = false;
+        
         
         
         if (count($data['categories']) > 0) {
@@ -809,7 +801,7 @@ class CategoryController extends Controller
                 }
             }
         }
-        array_unshift($data['categories'], $all);
+        
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
         return response()->json($response, 200);
     }
@@ -896,6 +888,39 @@ class CategoryController extends Controller
                 }
             }
         }
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
+        return response()->json($response, 200);
+    }
+
+
+    public function show_two_catads(Request $request, $sub_cat_id)
+    {
+        if ($request->lang == 'en') {
+            $data['categories'] = SubTwoCategory::where('sub_category_id', $sub_cat_id)->where('deleted', 0)->select('id', 'title_en as title', 'image')->get()->toArray();
+        } else {
+            $data['categories'] = SubTwoCategory::where('sub_category_id', $sub_cat_id)->where('deleted', 0)->select('id', 'title_ar as title', 'image')->get()->toArray();
+        }
+        $title = 'All';
+        if ($request->lang == 'ar') {
+            $title = 'الكل';
+        }
+        $all = new \StdClass;
+        $all->id = 0;
+        $all->title = $title;
+        $all->image = 'square_1_vdfx9q.png';
+        $all->next_level = false;
+        
+        
+        if (count($data['categories']) > 0) {
+            for ($i = 0; $i < count($data['categories']); $i++) {
+                $subThreeCats = SubThreeCategory::where('sub_category_id', $data['categories'][$i]['id'])->where('deleted', 0)->select('id')->first();
+                $data['categories'][$i]['next_level'] = false;
+                if (isset($subThreeCats['id'])) {
+                    $data['categories'][$i]['next_level'] = true;
+                }
+            }
+        }
+        array_unshift($data['categories'], $all);
         $response = APIHelpers::createApiResponse(false, 200, '', '', $data, $request->lang);
         return response()->json($response, 200);
     }

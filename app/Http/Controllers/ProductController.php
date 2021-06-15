@@ -1384,6 +1384,7 @@ class ProductController extends Controller
                 ->select('id', 'title_ar as title')
                 ->get();
         }
+        
         $response = APIHelpers::createApiResponse(false, 200, '', '', array('cities' => $cities), $request->lang);
         return response()->json($response, 200);
     }
@@ -1393,12 +1394,20 @@ class ProductController extends Controller
         if ($request->lang == 'en') {
             $areas = Area::where('deleted', '0')
                 ->select('id', 'title_en as title')
-                ->get();
+                ->get()->toArray();
         } else {
             $areas = Area::where('deleted', '0')
                 ->select('id', 'title_ar as title')
-                ->get();
+                ->get()->toArray();
         }
+        $title = 'All';
+        if ($request->lang == 'ar') {
+            $title = 'الكل';
+        }
+        $all = new \StdClass;
+        $all->id = 0;
+        $all->title = $title;
+        array_unshift($areas, $all);
         $response = APIHelpers::createApiResponse(false, 200, '', '', array('areas' => $areas), $request->lang);
         return response()->json($response, 200);
     }
