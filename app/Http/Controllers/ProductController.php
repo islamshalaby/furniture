@@ -1079,13 +1079,10 @@ class ProductController extends Controller
                 $ads['ended_ads'][$n]['favorite'] = false;
             }
         }
-        if (count($ads) == 0) {
-            $response = APIHelpers::createApiResponse(false, 200, 'no ads yet !', ' !لا يوجد اعلانات حتى الان', null, $request->lang);
-            return response()->json($response, 200);
-        } else {
-            $response = APIHelpers::createApiResponse(false, 200, '', '', $ads, $request->lang);
-            return response()->json($response, 200);
-        }
+        
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $ads, $request->lang);
+        return response()->json($response, 200);
+        
     }
 
     public function last_seen(Request $request)
@@ -1117,13 +1114,10 @@ class ProductController extends Controller
             }
         }
         
-        if (count($products) == 0) {
-            $response = APIHelpers::createApiResponse(false, 200, 'no ads yet !', ' !لا يوجد اعلانات حتى الان', null, $request->lang);
-            return response()->json($response, 200);
-        } else {
-            $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
-            return response()->json($response, 200);
-        }
+        
+        $response = APIHelpers::createApiResponse(false, 200, '', '', $products, $request->lang);
+        return response()->json($response, 200);
+        
     }
 
     public function offer_ads(Request $request)
@@ -1161,13 +1155,10 @@ class ProductController extends Controller
             }
             $inc = $inc + 1;
         }
-        if (count($data) == 0) {
-            $response = APIHelpers::createApiResponse(false, 200, 'no ads yet !', ' !لا يوجد اعلانات حتى الان', null, $request->lang);
-            return response()->json($response, 200);
-        } else {
-            $response = APIHelpers::createApiResponse(false, 200, '', '', array('offer_image' => $offer_image, 'data' => $data), $request->lang);
-            return response()->json($response, 200);
-        }
+        
+        $response = APIHelpers::createApiResponse(false, 200, '', '', array('offer_image' => $offer_image, 'data' => $data), $request->lang);
+        return response()->json($response, 200);
+        
     }
 
     public function select_current_ads(Request $request)
