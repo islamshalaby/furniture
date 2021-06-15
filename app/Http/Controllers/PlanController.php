@@ -118,7 +118,6 @@ class PlanController extends Controller
                         foreach($plans->Details as $plan_detail){
                             $plan_detail->title = $plan_detail->title_en;
                         }
-                        $plans->price = 'KWD ' . $plans->price;
                         $plans->title = $plans->title_en;
                     }
                     return $plans;
