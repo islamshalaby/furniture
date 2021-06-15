@@ -23,6 +23,9 @@ class Product extends Model
     public function sub_category() {
         return $this->belongsTo('App\SubCategory', 'sub_category_id');
     }
+    public function subTwo_category() {
+        return $this->belongsTo('App\SubTwoCategory', 'sub_category_two_id');
+    }
     public function Plan() {
         return $this->belongsTo('App\Plan', 'plan_id');
     }

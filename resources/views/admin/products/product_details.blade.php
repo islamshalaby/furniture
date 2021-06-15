@@ -61,6 +61,21 @@
                             </td>
                         </tr>
                         <tr>
+                            <td class="label-table" > {{ __('messages.sub_category_first') }} </td>
+                            <td>
+                                {{ $data->sub_category->title_ar }}
+                            </td>
+                        </tr>
+                        @if (!empty($data->sub_category_two_id))
+                        <tr>
+                            <td class="label-table" > {{ __('messages.sub_category_second') }} </td>
+                            <td>
+                                {{ $data->subTwo_category->title_ar }}
+                            </td>
+                        </tr>
+                        @endif
+                        
+                        <tr>
                             <td class="label-table" > {{ __('messages.user') }} </td>
                             <td>
                                 {{ $data->user->name }}
