@@ -53,7 +53,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function products() {
-        return $this->hasMany('App\Product', 'user_id');
+        return $this->hasMany('App\Product', 'user_id')->where('deleted', 0);
     }
 
     public function company() {
