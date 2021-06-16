@@ -75,13 +75,20 @@ class NotificationController extends AdminController{
     public function resend(Request $request){
         $notification_id = $request->id;
         $notification = Notification::find($notification_id);
-
-        $users_tokens = Visitor::select('fcm_token')->get();
-        $array_values = array_values((array)$users_tokens);
-        $array_values = $array_values[0];
-        APIHelpers::send_notification($notification->title , $notification->body , $notification->image , null , $array_values);
-        session()->flash('success', trans('messages.sent_s'));
-        return redirect()->back();
+        $users = Visitor::select('id','fcm_token', 'user_id')->where('fcm_token' ,'!=' , null)->get();
+        for($i =0; $i < count($users); $i++){
+            $fcm_tokens[$i] = $users[$i]['fcm_token'];
+            $user_notification = new UserNotification();
+            $user_notification->visitor_id = $users[$i]['id'];
+            $user_notification->user_id = $users[$i]['user_id'];
+            $user_notification->notification_id = $notification->id;
+            $user_notification->save();            
+        }
+        $users_tokens = Visitor::where('fcm_token' ,'!=' , null)->select('fcm_token')->pluck('fcm_token');
+        
+        $nots = APIHelpers::send_notification($notification->title , $notification->body , $notification->image , null , $users_tokens);
+        
+        return redirect()->back()->with('status', 'Sent succesfully');
     }
 
 }
