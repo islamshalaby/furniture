@@ -225,6 +225,7 @@ use Illuminate\Http\Request;
 
     //visitor
     Route::post('/visitor/create/{lang}/{v}' , 'VisitorController@create')->middleware('checkguest');
+    Route::post('/api/visitor/create/{lang}/{v}' , 'VisitorController@create')->middleware('checkguest');
 
 
     Route::get('/ad/cities/{lang}/{v}' , 'ProductController@cities');
