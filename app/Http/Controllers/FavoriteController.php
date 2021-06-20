@@ -82,7 +82,7 @@ class FavoriteController extends Controller
         }else {
             $ads = Favorite::where('user_id', $user->id)->orderBy('id','desc')
                             ->pluck('product_id')->toArray();
-            $ids_ordered = [];
+            $ids_ordered = '';
             if (count($ads) > 0) {
                 $ids_ordered = implode(',', $ads);
             }
