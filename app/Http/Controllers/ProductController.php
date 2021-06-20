@@ -564,8 +564,6 @@ class ProductController extends Controller
             'images' => 'required',
             'city_id' => 'required|exists:cities,id',
             'area_id' => 'required|exists:areas,id',
-            'latitude' => 'required',
-            'longitude' => 'required',
             'share_location' => 'required',
             // 'options' => 'required',
             'plan_id' => 'required',
