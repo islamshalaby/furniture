@@ -82,8 +82,13 @@ class FavoriteController extends Controller
         }else {
             $ads = Favorite::where('user_id', $user->id)->orderBy('id','desc')
                             ->pluck('product_id')->toArray();
-
-            $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
+            $ids_ordered = [];
+            if (count($ads) > 0) {
+                $ids_ordered = implode(',', $ads);
+            }
+			
+			
+            $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->orderByRaw("FIELD(id, $ids_ordered)")->with('City_api')->simplePaginate(12);
             for ($i = 0; $i < count($products); $i ++) {
                 $products[$i]['time'] = APIHelpers::get_time_day($products[$i]['created_at'], $request->lang);
                 if ($user) {
