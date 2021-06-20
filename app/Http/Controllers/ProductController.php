@@ -1096,10 +1096,10 @@ class ProductController extends Controller
 
         $ads = Product_view::where('user_id', auth()->user()->id)
             ->orderby('id', 'desc')
-            ->pluck('product_id')->toArray();
+            ->pluck('product_id')->orderBy('id', 'desc')->toArray();
         
         
-        $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->orderBy('id', 'desc')->with('City_api')->simplePaginate(12);
+        $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
         // dd($ads);
         for ($i = 0; $i < count($products); $i ++) {
             if ($user) {
