@@ -4,7 +4,7 @@
 
 @section('content')
 
-        <div id="tableSimple" class="col-lg-12 col-12 layout-spacing">
+    <div id="tableSimple" class="col-lg-12 col-12 layout-spacing">
         <div class="statbox widget box box-shadow">
             <div class="widget-header">
             <div class="row">
@@ -34,7 +34,19 @@
                 </table>
             </div>
         </div>
+        <div class="row">
+            @if (count($data['contact_us']->images) > 0)
+            @foreach ($data['contact_us']->images as $image)
+            <div class="col-2 product_image">
+                <img style="width: 100%" src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{ $image->image }}"  />
+            </div>
+            @endforeach
+            @endif
+        </div>
     </div>  
+    
+    
+    
 
 @endsection
 

@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class ContactUs extends Model
 {
+    protected $fillable = ['phone', 'message', 'seen'];
+
+    public function images() {
+        return $this->hasMany('App\ContactImage', 'contact_id');
+    }
     //
     // protected $appendes = ['custom'];
     // public function getCustomAttribute(){
