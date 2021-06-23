@@ -592,7 +592,7 @@ class UserController extends Controller
         $package = Balance_package::findOrFail($request->balance);
         if ($package != null) {
             $user = auth()->user();
-            $selected_user = User::findOrFail($user->id);
+            $selected_user = User::findOrFail($request->user_id);
             $selected_user->my_wallet = $selected_user->my_wallet + $package->amount;
             $selected_user->payed_balance = $selected_user->payed_balance + $package->amount;
             $selected_user->save();

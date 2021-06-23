@@ -1094,7 +1094,7 @@ class ProductController extends Controller
 
         $ads = Product_view::where('user_id', auth()->user()->id)
             ->orderby('id', 'desc')
-            ->pluck('product_id')->orderBy('id', 'desc')->toArray();
+            ->pluck('product_id')->toArray();
         
         
         $products = Product::whereIn('id', $ads)->where('deleted', 0)->where('publish', 'Y')->select('id', 'title', 'price', 'main_image as image', 'pin', 'views', 'city_id', 'created_at')->with('City_api')->simplePaginate(12);
