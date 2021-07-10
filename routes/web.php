@@ -331,4 +331,5 @@ Route::group([
 ] , function($router){
     Route::get('aboutapp/{lang}' , 'WebViewController@getabout');
     Route::get('termsandconditions/{lang}' , 'WebViewController@gettermsandconditions' );
+    Route::get('chat' , 'WebViewController@getChat' );
 });

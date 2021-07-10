@@ -1322,7 +1322,11 @@ class ProductController extends Controller
                 $image_new_name = $image_id . '.' . $image_format;
                 $input['main_image'] = $image_new_name;
             }
+            
             if ($request->images != null) {
+                if ($request->ios && count($product->images) > 0) {
+                    $product->images()->delete();
+                }
                 foreach ($request->images as $image) {
                     Cloudder::upload("data:image/jpeg;base64," . $image, null);
                     $imagereturned = Cloudder::getResult();

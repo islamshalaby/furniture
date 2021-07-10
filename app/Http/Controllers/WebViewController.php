@@ -24,4 +24,9 @@ class WebViewController extends Controller
 		$data['lang'] = $lang;
         return view('webview.termsandconditions' , ['data' => $data]);
     }
+
+    // get chat
+    public function getChat(Request $request) {
+        return view('webview.chat');
+    }
 }
