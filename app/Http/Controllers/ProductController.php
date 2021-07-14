@@ -1277,7 +1277,7 @@ class ProductController extends Controller
 
     public function update_ad(Request $request, $id)
     {
-        $input = $request->except('ios');
+        $input = $request->except(['ios', 'ad_id']);
         $product = Product::where('id',$id)->first();
         if($product == null){
             $response = APIHelpers::createApiResponse(true , 406 , 'ad not exists' ,'لا يوجد اعلان بهذا ال id' , null , $request->lang);
