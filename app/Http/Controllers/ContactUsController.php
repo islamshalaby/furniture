@@ -30,7 +30,12 @@ class ContactUsController extends Controller
         $contact->save();
         if ($request->images && count($request->images) > 0) {
             for ($i = 0; $i < count($request->images); $i ++) {
-                $image = $request->images[$i];  // your base64 encoded
+                if (strpos($request->images[$i], 'data:image') !== false) {
+                    $image = $request->images[$i];
+                }else {
+                    $image = "data:image/png;base64," . $request->images[$i];  // your base64 encoded
+                }
+                
                 // $image = str_replace('data:image/png;base64,', '', $image);
                 Cloudder::upload($image, null);
                 $front_imageereturned = Cloudder::getResult();

@@ -46,7 +46,7 @@
             @if (count($data['contact_us']->images) > 0)
             @foreach ($data['contact_us']->images as $image)
             <div class="col-2 product_image">
-                <img style="width: 100%" src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{ $image->image }}"  />
+                <img style="width: 100%" src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/v1581928924/{{ $image->image }}"  />
             </div>
             @endforeach
             @endif
