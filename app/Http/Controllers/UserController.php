@@ -18,6 +18,7 @@ use App\Setting;
 use App\Favorite;
 use App\Category;
 use App\Company;
+use App\Visitor;
 use JD\Cloudder\Facades\Cloudder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -179,10 +180,15 @@ class UserController extends Controller
         }
 
         $user_id = $user->id;
-        $notifications_ids = UserNotification::where('user_id' , $user_id)->orderBy('id' , 'desc')->select('notification_id')->get();
+        $visitor = Visitor::where('unique_id', $request->unique_id)->select('id')->first();
+        $notifications_ids = UserNotification::where('user_id' , $user_id)->where('visitor_id', $visitor->id)->orderBy('id' , 'desc')->select('notification_id')->get();
         $notifications = [];
         for($i = 0; $i < count($notifications_ids); $i++){
-            $notifications[$i] = Notification::select('id','title' , 'body' ,'image' , 'created_at')->find($notifications_ids[$i]['notification_id']);
+            $noti = Notification::select('id','title' , 'body' ,'image' , 'created_at')->find($notifications_ids[$i]['notification_id']);
+            if ($noti) {
+                $notifications[$i] = $noti;
+            }
+            
         }
         $data['notifications'] = $notifications;
         $response = APIHelpers::createApiResponse(false , 200 ,  '', '' ,$data['notifications'], $request->lang );

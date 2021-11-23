@@ -40,6 +40,8 @@ class VisitorController extends Controller
 
         $last_visitor = Visitor::where('unique_id' , $request->unique_id)->first();
         if($last_visitor){
+            $last_visitor->fcm_token = $request->fcm_token;
+            $last_visitor->save();
             $visitor = $last_visitor;
         }else{
             $visitor = new Visitor();
