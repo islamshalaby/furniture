@@ -564,7 +564,7 @@ class UserController extends Controller
         );
         $call_back_url = $root_url."/api/wallet/excute_pay?user_id=".$user->id."&balance=".$request->package_id;
         $error_url = $root_url."/api/pay/error";
-//        dd($call_back_url);
+
         $fields =array(
             "CustomerName" => $user->name,
             "NotificationOption" => "LNK",

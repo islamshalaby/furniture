@@ -40,7 +40,12 @@ class SettingController extends AdminController{
         $setting->twitter = $request->twitter;
         $setting->snap_chat = $request->snap_chat;
         $setting->free_balance = $request->free_balance;
-
+        
+        $show_buy = 0; 
+        if ($request->show_buy) {
+            $show_buy = 1;
+        }
+        $setting->show_buy = $show_buy;
 		if($request->is_loop_free_balance){
 			$setting->is_loop_free_balance = 'y';
 		}else{

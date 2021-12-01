@@ -59,6 +59,18 @@
                                         <input type="text" name="address_en" class="form-control" id="address_en"
                                                placeholder="{{ __('messages.address_en') }}" value="{{$data['setting']['address_en']}}">
                                     </div>
+                                    
+                                    <div class="col-md-4">
+                                        <label for="plan_price"> &nbsp; </label>
+                                        <div class="form-check pl-0">
+                                            <div class="custom-control custom-checkbox checkbox-info">
+                                                <input type="checkbox" {{ $data['setting']['show_buy'] == 1 ? 'checked' : ''}} class="custom-control-input" name="show_buy"
+                                                       id="show_buy">
+                                                <label class="custom-control-label"
+                                                       for="show_buy">{{ __('messages.show_buy') }}</label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -83,6 +95,7 @@
                                         <input type="text" name="twitter" class="form-control" id="twitter"
                                                placeholder="{{ __('messages.twitter') }}" value="{{$data['setting']['twitter']}}">
                                     </div>
+                                    
                                     <div class="form-group mb-4">
                                         <label for="snap_chat">{{ __('messages.snap_chat') }}</label>
                                         <input type="text" name="snap_chat" class="form-control" id="snap_chat"
