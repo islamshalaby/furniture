@@ -2,6 +2,8 @@
     return [
 
         'ad_settings' => "Ads settings",
+        'statuschanged' => 'status changes successfully',
+        'hidden_show' => "hidden / show",
         'cities' => "Provinces",
         'areas' => "Regions",
         'area' => "Region",

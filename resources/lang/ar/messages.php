@@ -2,6 +2,8 @@
 return [
     //new
     'our_offers' => "عروضنا",
+    'statuschanged' => 'تم تعديل الحالة بنجاح',
+    'hidden_show' => "اخفاء / اظهار",
     'choose_to_you' => "اخترنالك",
     'show_all' => "اخترنالك",
     'choosen_done' => "تم الاضافة الى اخترنالك",

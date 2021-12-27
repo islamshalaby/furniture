@@ -25,7 +25,7 @@
                             <th class="text-center">Id</th>
                             <th class="text-center">{{ __('messages.image') }}</th>
                             <th class="text-center">{{ __('messages.name') }}</th>
-                            {{-- <th class="text-center">{{ __('messages.sub_category_third') }}</th> --}}
+                            <th class="text-center">{{ __('messages.hidden_show') }}</th>
                             @if(Auth::user()->update_data)<th class="text-center">{{ __('messages.edit') }}</th>@endif
                             @if(Auth::user()->delete_data)<th class="text-center" >{{ __('messages.delete') }}</th>@endif
                         </tr>
@@ -37,19 +37,13 @@
                                 <td class="text-center"><?=$i;?></td>
                                 <td class="text-center"><img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{ $row->image }}"  /></td>
                                 <td class="text-center blue-color">{{ app()->getLocale() == 'en' ? $row->title_en : $row->title_ar }}</td>
-                                {{-- <td class="text-center blue-color">
-                                    <a href="{{route('sub_three_cat.show',$row->id)}}">
-                                        <div class="">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                 stroke-linejoin="round" class="feather feather-layers">
-                                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                                                <polyline points="2 17 12 22 22 17"></polyline>
-                                                <polyline points="2 12 12 17 22 12"></polyline>
-                                            </svg>
-                                        </div>
-                                    </a>
-                                </td> --}}
+                                <td class="text-center">
+                                    <label class="switch s-icons s-outline  s-outline-primary  mb-4 mr-2">
+                                        <input type="checkbox" onchange="update_active(this)"
+                                               value="{{ $row->id }}" @if($row->is_show == 1) checked  @endif >
+                                        <span class="slider round"></span>
+                                    </label>
+                                </td>
                                 @if(Auth::user()->update_data)
                                     <td class="text-center blue-color" ><a href="{{ route( 'sub_two_cat.edit', $row->id ) }}" ><i class="far fa-edit"></i></a></td>
                                 @endif
@@ -86,6 +80,26 @@
                     toastr.success("{{ __('messages.status_changed') }}");
                 }else{
                     toastr.error("{{trans('admin.status_not_changed')}}");
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function update_active(el) {
+            if (el.checked) {
+                var status = 1;
+            } else {
+                var status = 0;
+            }
+            $.post('{{ route('sub_two_cat.change_is_show') }}', {
+                _token: '{{ csrf_token() }}',
+                id: el.value,
+                status: status
+            }, function (data) {
+                if (data == 1) {
+                    toastr.success("{{trans('messages.statuschanged')}}");
+                } else {
+                    toastr.error("{{trans('messages.statuschanged')}}");
                 }
             });
         }

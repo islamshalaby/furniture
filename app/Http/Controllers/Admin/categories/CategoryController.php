@@ -35,6 +35,13 @@ class CategoryController extends AdminController{
         $data['categories'] = Category::where('deleted' , 0)->orderBy('id' , 'desc')->get();
         return view('admin.categories.index' , ['data' => $data]);
     }
+
+    public function change_is_show(Request $request){
+        $data['is_show'] = $request->status ;
+        Category::where('id', $request->id)->update($data);
+        return 1;
+    }
+    
     // get edit page
     public function EditGet(Request $request){
         $data['category'] = Category::find($request->id);

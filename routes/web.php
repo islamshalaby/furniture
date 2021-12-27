@@ -138,6 +138,9 @@ Route::group(['middleware'=>'language','prefix' => "admin-panel",'namespace' => 
         Route::get('edit/{id}' , 'CategoryController@EditGet');
         Route::post('edit/{id}' , 'CategoryController@EditPost');
         Route::get('delete/{id}' , 'CategoryController@delete');
+        Route::post('change/is_show', 'CategoryController@change_is_show')->name('category.change_is_show');
+        Route::post('sub_cat/is_show', 'SubCategoryController@change_is_show')->name('sub_cat.change_is_show');
+        Route::post('sub_two_cat/is_show', 'SubTwoCategoryController@change_is_show')->name('sub_two_cat.change_is_show');
         Route::get('products/{category}' , 'CategoryController@category_products')->name('category.products');
     });
 

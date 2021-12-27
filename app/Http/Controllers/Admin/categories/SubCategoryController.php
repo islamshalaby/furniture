@@ -75,6 +75,13 @@ class SubCategoryController extends AdminController
         session()->flash('success', trans('messages.updated_s'));
         return redirect( route('sub_cat.show',$model->category_id));
     }
+
+    public function change_is_show(Request $request){
+        $data['is_show'] = $request->status ;
+        SubCategory::where('id', $request->id)->update($data);
+        return 1;
+    }
+    
     public function destroy($id)
     {
         $data['deleted'] = "1";

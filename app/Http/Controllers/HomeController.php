@@ -302,7 +302,7 @@ class HomeController extends Controller
 
     // get home categories
     public function getHomeCategories(Request $request) {
-        $categories = Category::where('deleted', 0)->select('id', 'image', 'title_' . $request->lang . ' as title')->get();
+        $categories = Category::where('deleted', 0)->where('is_show', 1)->select('id', 'image', 'title_' . $request->lang . ' as title')->get();
         $data = [];
         if (count($categories) > 0) {
             for($i = 0; $i < count($categories); $i ++) {

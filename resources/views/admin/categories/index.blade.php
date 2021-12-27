@@ -25,7 +25,7 @@
                             <th>{{ __('messages.image') }}</th>
                             <th>{{ __('messages.category_title') }}</th>
                             <th class="text-center">{{ __('messages.sub_category_first') }}</th>
-                            {{--  <th class="text-center">{{ __('messages.cat_options') }}</th>  --}}
+                            <th class="text-center">{{ __('messages.hidden_show') }}</th>
                             <th class="text-center">{{ __('messages.products') }}</th>
                             @if(Auth::user()->update_data)<th class="text-center">{{ __('messages.edit') }}</th>@endif
                             @if(Auth::user()->delete_data)<th class="text-center">{{ __('messages.delete') }}</th>@endif
@@ -38,19 +38,7 @@
                                 <td><?=$i;?></td>
                                 <td class="text-center"><img src="https://res.cloudinary.com/{{ cloudinary_app_name() }}/image/upload/w_100,q_100/v1581928924/{{ $category->image }}"  /></td>
                                 <td>{{ app()->getLocale() == 'en' ? $category->title_en : $category->title_ar }}</td>
-                                {{--  <td class="text-center blue-color">
-                                    <a href="{{route('sub_cat.show',$category->id)}}">
-                                        <div class="">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                                 stroke-linejoin="round" class="feather feather-layers">
-                                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                                                <polyline points="2 17 12 22 22 17"></polyline>
-                                                <polyline points="2 12 12 17 22 12"></polyline>
-                                            </svg>
-                                        </div>
-                                    </a>
-                                </td>  --}}
+                                
                                 <td class="text-center blue-color">
                                     <a href="{{route('product.get_sub_cat',$category->id)}}">
                                         <div class="">
@@ -63,6 +51,13 @@
                                             </svg>
                                         </div>
                                     </a>
+                                </td>
+                                <td class="text-center">
+                                    <label class="switch s-icons s-outline  s-outline-primary  mb-4 mr-2">
+                                        <input type="checkbox" onchange="update_active(this)"
+                                               value="{{ $category->id }}" @if($category->is_show == 1) checked  @endif >
+                                        <span class="slider round"></span>
+                                    </label>
                                 </td>
                                 <td class="text-center blue-color"><a href="{{ route('category.products', $category->id) }}" ><i class="far fa-eye"></i></a></td>
                                 @if(Auth::user()->update_data)
@@ -89,3 +84,25 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+    <script type="text/javascript">
+        function update_active(el) {
+            if (el.checked) {
+                var status = 1;
+            } else {
+                var status = 0;
+            }
+            $.post('{{ route('category.change_is_show') }}', {
+                _token: '{{ csrf_token() }}',
+                id: el.value,
+                status: status
+            }, function (data) {
+                if (data == 1) {
+                    toastr.success("{{trans('messages.statuschanged')}}");
+                } else {
+                    toastr.error("{{trans('messages.statuschanged')}}");
+                }
+            });
+        }
+    </script>
+@endpush
